@@ -1,12 +1,14 @@
 import { createElement } from '../render.js';
 
-function createCreationFormTemplate() {
-  return ;
+function createEventListTemplate() {
+  return `
+  <ul class="trip-events__list"></ul>
+  `;
 }
 
-export default class NewTaskButtonView {
+export default class EventListView {
   getTemplate() {
-    return createCreationFormTemplate();
+    return createEventListTemplate();
   }
 
   getElement() {
@@ -21,3 +23,4 @@ export default class NewTaskButtonView {
     this.element = null;
   }
 }
+
