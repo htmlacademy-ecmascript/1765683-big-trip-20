@@ -7,19 +7,23 @@ import { render } from '../render.js';
 
 export default class MainPresenter {
   eventListComponent = new EventListView();
+  sortComponent = new SortView();
+  eventEditComponent = new EventEditView();
+  newEventComponent = new EventNewView();
+  eventComponent = new EventView();
 
   constructor({eventContainer}){
     this.eventContainer = eventContainer;
   }
 
   init(){
-    render(new SortView(), this.eventContainer);
+    render(this.sortComponent, this.eventContainer);
     render(this.eventListComponent, this.eventContainer);
-    render(new EventEditView(), this.eventListComponent.getElement());
-    render(new EventNewView(), this.eventListComponent.getElement());
+    render(this.eventEditComponent, this.eventListComponent.getElement());
+    render(this.newEventComponent, this.eventListComponent.getElement());
 
     for (let i = 0; i < 3; i++) {
-      render(new EventView(), this.eventListComponent.getElement());
+      render(this.eventComponent, this.eventListComponent.getElement());
     }
 
   }

@@ -2,6 +2,7 @@ import { createElement } from '../render.js';
 
 function createEventEditTemplate(){
   return (
+    /*html*/
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">

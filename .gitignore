@@ -6,6 +6,8 @@ Thumbs.db
 .idea
 *.sublime*
 .vscode
+.prettierignore
+.prettierrc
 
 # Вспомогательные файлы
 *.log*
