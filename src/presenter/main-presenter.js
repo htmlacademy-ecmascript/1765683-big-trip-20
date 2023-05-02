@@ -6,14 +6,13 @@ const siteHeaderElement = document.querySelector('header');
 const siteFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
 export default class MainPresenter {
   sortComponent = new SortView();
-  filterComponent = new new FilterView();
+  filterComponent = new FilterView();
 
   constructor({eventContainer}){
     this.eventContainer = eventContainer;
   }
 
   init(){
-    this.waypoints = [...this.waypointsModel.getWaypoints()];
 
     render(this.sortComponent, this.eventContainer);
     render(this.filterComponent, siteFiltersElement);
