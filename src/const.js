@@ -19,6 +19,10 @@ const WAYPOINT_OPTIONS = [
   'Restaurant',
 ];
 
-const PRICE = [1000, 2000, 3000, 4000, 5000];
+const OFFERS = ['Upgrade to a business class', 'Add luggage', 'Switch to comfort', 'Rent a car', 'Order Uber', 'Add breakfast'];
 
-export { TRAVEL_WAYPOINTS, WAYPOINT_OPTIONS, PRICE };
+const OFFERS_PRICE = [20, 50, 140, 200, 600, ];
+
+const TOTAL_PRICE = [20, 160, 600, 830];
+
+export { TRAVEL_WAYPOINTS, WAYPOINT_OPTIONS, TOTAL_PRICE, OFFERS, OFFERS_PRICE };

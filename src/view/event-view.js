@@ -1,4 +1,5 @@
 import { createElement } from '../render.js';
+import { humanizeDate } from '../util.js';
 
 function createEventTemplate(data){
   const { basePrice, dateFrom, dateTo, destination, offers,type} = data;
@@ -13,9 +14,9 @@ function createEventTemplate(data){
         <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+            <time class="event__start-time" datetime="2019-03-18T10:30">${humanizeDate(dateFrom)}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+            <time class="event__end-time" datetime="2019-03-18T11:00">${humanizeDate(dateTo)}</time>
           </p>
           <p class="event__duration">30M</p>
         </div>
@@ -27,7 +28,7 @@ function createEventTemplate(data){
           <li class="event__offer">
             <span class="event__offer-title">${offers[0].title}</span>
             &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offers[0].title}</span>
+            <span class="event__offer-price">${offers[0].price}</span>
           </li>
         </ul>
         <button class="event__favorite-btn event__favorite-btn--active" type="button">
@@ -45,8 +46,13 @@ function createEventTemplate(data){
 }
 
 export default class EventView {
+
+  constructor ({waypoint}) {
+    this.waypoint = waypoint;
+  }
+
   getTemplate(){
-    return createEventTemplate();
+    return createEventTemplate(this.waypoint);
   }
 
   getElement(){
