@@ -1,11 +1,10 @@
 import { createElement } from '../render.js';
 import { humanizeDate } from '../util.js';
 
-function createEventTemplate(data){
-  const { basePrice, dateFrom, dateTo, destination, offers,type} = data;
+function createEventTemplate(data) {
+  const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
 
-  return (
-    `<li class="trip-events__item">
+  return `<li class="trip-events__item">
     <div class="event">
         <time class="event__date" datetime="2019-03-18">MAR 18</time>
         <div class="event__type">
@@ -41,29 +40,27 @@ function createEventTemplate(data){
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
-      </li>`
-  );
+      </li>`;
 }
 
 export default class EventView {
-
-  constructor ({waypoint}) {
+  constructor({ waypoint }) {
     this.waypoint = waypoint;
   }
 
-  getTemplate(){
+  getTemplate() {
     return createEventTemplate(this.waypoint);
   }
 
-  getElement(){
-    if(!this.element){
+  getElement() {
+    if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
 
     return this.element;
   }
 
-  removeElement(){
+  removeElement() {
     this.element = null;
   }
 }
