@@ -3,6 +3,7 @@ import EventListView from '../view/event-list-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventNewView from '../view/event-new-view.js';
 import EventView from '../view/event-view.js';
+import { getRandomArrayElement } from '../util.js';
 
 export default class WaypointPresenter {
   constructor({ eventContainer, waypointsModel }) {
@@ -11,14 +12,13 @@ export default class WaypointPresenter {
   }
 
   eventListComponent = new EventListView();
-  eventEditComponent = new EventEditView();
   newEventComponent = new EventNewView();
 
   init() {
     this.waypoints = [...this.waypointsModel.getWaypoints()];
 
     render(this.eventListComponent, this.eventContainer);
-    render(this.eventEditComponent, this.eventListComponent.getElement());
+    render(new EventEditView({waypoints: getRandomArrayElement(this.waypoints)}), this.eventListComponent.getElement());
     render(this.newEventComponent, this.eventListComponent.getElement());
 
     for (let i = 0; i < this.waypoints.length; i++) {
