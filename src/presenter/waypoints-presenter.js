@@ -17,19 +17,31 @@ export default class WaypointPresenter {
     this.#waypointsModel = waypointsModel;
   }
 
-
   init() {
     this.#waypoints = [...this.#waypointsModel.waypoints];
 
-    render(this.#eventListComponent, this.#eventContainer);
-    render(new EventEditView({waypoint: getRandomArrayElement(this.#waypoints)}), this.#eventListComponent.element);
-    render(this.#newEventComponent, this.#eventListComponent.element);
+    this.#renderEventList();
+    render(
+      new EventEditView({ waypoint: getRandomArrayElement(this.#waypoints) }),
+      this.#eventListComponent.element
+    );
+    this.#renderNewEventComponent();
 
     for (let i = 0; i < this.#waypoints.length; i++) {
-      render(
-        new EventView({ waypoint: this.#waypoints[i] }),
-        this.#eventListComponent.element
-      );
+      this.#renderWaypoints(this.#waypoints[i]);
     }
+  }
+
+  #renderEventList() {
+    render(this.#eventListComponent, this.#eventContainer);
+  }
+
+  #renderNewEventComponent() {
+    render(this.#newEventComponent, this.#eventListComponent.element);
+  }
+
+  #renderWaypoints(waypoint) {
+    const eventViewComponent = new EventView({ waypoint });
+    render(eventViewComponent, this.#eventListComponent.element);
   }
 }
