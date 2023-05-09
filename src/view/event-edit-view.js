@@ -115,14 +115,16 @@ function createEventEditTemplate(data){
 }
 
 export default class EventEditView extends AbstractView{
+  #waypoint = null;
+
   constructor({ waypoint }) {
     super();
-    this.waypoint = waypoint;
+    this.#waypoint = waypoint;
 
   }
 
   get template(){
-    return createEventEditTemplate(this.waypoint);
+    return createEventEditTemplate(this.#waypoint);
   }
 
 }

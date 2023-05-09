@@ -44,13 +44,15 @@ function createEventTemplate(data) {
 }
 
 export default class EventView extends AbstractView {
+  #waypoint = null;
+
   constructor({ waypoint }) {
     super();
-    this.waypoint = waypoint;
+    this.#waypoint = waypoint;
   }
 
   get template() {
-    return createEventTemplate(this.waypoint);
+    return createEventTemplate(this.#waypoint);
   }
 
 }

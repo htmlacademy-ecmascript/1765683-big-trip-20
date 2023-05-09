@@ -6,25 +6,29 @@ import EventView from '../view/event-view.js';
 import { getRandomArrayElement } from '../util.js';
 
 export default class WaypointPresenter {
+  #eventContainer = null;
+  #waypointsModel = null;
+  #waypoints = [];
+  #eventListComponent = new EventListView();
+  #newEventComponent = new EventNewView();
+
   constructor({ eventContainer, waypointsModel }) {
-    this.eventContainer = eventContainer;
-    this.waypointsModel = waypointsModel;
+    this.#eventContainer = eventContainer;
+    this.#waypointsModel = waypointsModel;
   }
 
-  eventListComponent = new EventListView();
-  newEventComponent = new EventNewView();
 
   init() {
-    this.waypoints = [...this.waypointsModel.getWaypoints()];
+    this.#waypoints = [...this.#waypointsModel.waypoints];
 
-    render(this.eventListComponent, this.eventContainer);
-    render(new EventEditView({waypoint: getRandomArrayElement(this.waypoints)}), this.eventListComponent.element);
-    render(this.newEventComponent, this.eventListComponent.element);
+    render(this.#eventListComponent, this.#eventContainer);
+    render(new EventEditView({waypoint: getRandomArrayElement(this.#waypoints)}), this.#eventListComponent.element);
+    render(this.#newEventComponent, this.#eventListComponent.element);
 
-    for (let i = 0; i < this.waypoints.length; i++) {
+    for (let i = 0; i < this.#waypoints.length; i++) {
       render(
-        new EventView({ waypoint: this.waypoints[i] }),
-        this.eventListComponent.element
+        new EventView({ waypoint: this.#waypoints[i] }),
+        this.#eventListComponent.element
       );
     }
   }
