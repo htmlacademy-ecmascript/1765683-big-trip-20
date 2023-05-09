@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../util.js';
 
 function createEventTemplate(data) {
@@ -43,24 +43,14 @@ function createEventTemplate(data) {
       </li>`;
 }
 
-export default class EventView {
+export default class EventView extends AbstractView {
   constructor({ waypoint }) {
+    super();
     this.waypoint = waypoint;
   }
 
-  getTemplate() {
+  get template() {
     return createEventTemplate(this.waypoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }

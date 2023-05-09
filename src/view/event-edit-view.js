@@ -1,6 +1,6 @@
-import { createElement } from '../render.js';
 import { WAYPOINT_OPTIONS } from '../const.js';
 import dayjs from 'dayjs';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createEventEditTemplate(data){
 
@@ -49,7 +49,7 @@ function createEventEditTemplate(data){
     return selectType;
   };
 
-  return (/*html*/
+  return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
@@ -114,24 +114,15 @@ function createEventEditTemplate(data){
   );
 }
 
-export default class EventEditView {
-  constructor({ waypoints }) {
-    this.waypoints = waypoints;
+export default class EventEditView extends AbstractView{
+  constructor({ waypoint }) {
+    super();
+    this.waypoint = waypoint;
+
   }
 
-  getTemplate(){
-    return createEventEditTemplate(this.waypoints);
+  get template(){
+    return createEventEditTemplate(this.waypoint);
   }
 
-  getElement(){
-    if(!this.element){
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement(){
-    this.element = null;
-  }
 }
