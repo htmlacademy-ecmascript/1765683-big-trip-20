@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventNewView from '../view/event-new-view.js';
@@ -49,9 +49,46 @@ export default class WaypointPresenter {
   }
 
   #renderWaypoints(waypoint) {
-    const eventViewComponent = new EventView({ waypoint });
+
+    const escKeydownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditToInfo();
+        document.removeEventListener('keydown', escKeydownHandler);
+      }
+    };
+
+
+    const eventViewComponent = new EventView({
+      waypoint,
+      onEditClick: () => {
+        replaceInfoToEdit();
+        document.addEventListener('keydown', escKeydownHandler);
+      }
+    });
+
+    const eventEditComponent = new EventEditView({ waypoint: getRandomArrayElement(this.#waypoints),
+      onFormSubmit: () => {
+        replaceEditToInfo();
+        document.removeEventListener('keydown', escKeydownHandler);
+      },
+      onFormCancel: () => {
+        replaceEditToInfo();
+        document.removeEventListener('keydown', escKeydownHandler);
+      }});
+
+
+    function replaceInfoToEdit() {
+      replace(eventEditComponent, eventViewComponent);
+    }
+
+    function replaceEditToInfo() {
+      replace(eventEditComponent, eventEditComponent);
+    }
+
     render(eventViewComponent, this.#eventListComponent.element);
   }
+
 
   #renderEmptyListMessage() {
     render(new EmptyListMessage, this.#eventListComponent.element);

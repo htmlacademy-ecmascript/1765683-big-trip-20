@@ -45,11 +45,22 @@ function createEventTemplate(data) {
 
 export default class EventView extends AbstractView {
   #waypoint = null;
+  #onEditClick = null;
 
-  constructor({ waypoint }) {
+  constructor({ waypoint, onEditClick }) {
     super();
     this.#waypoint = waypoint;
+    this.#onEditClick = onEditClick;
+
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#onEvtClick);
   }
+
+  #onEvtClick = (evt) => {
+    evt.preventDefault();
+    this.#onEditClick();
+  };
 
   get template() {
     return createEventTemplate(this.#waypoint);
