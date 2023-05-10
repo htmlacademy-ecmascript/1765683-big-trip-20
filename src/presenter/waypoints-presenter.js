@@ -22,10 +22,6 @@ export default class WaypointPresenter {
     this.#waypoints = [...this.#waypointsModel.waypoints];
 
     this.#renderEventList();
-    /*render(
-      new EventEditView({ waypoint: getRandomArrayElement(this.#waypoints) }),
-      this.#eventListComponent.element
-    );*/
 
     if (this.#waypoints.length !== 0) {
 
