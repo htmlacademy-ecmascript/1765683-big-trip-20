@@ -75,11 +75,11 @@ export default class WaypointPresenter {
 
 
     function replaceInfoToEdit() {
-      replace(eventViewComponent, eventEditComponent);
+      replace(eventEditComponent, eventViewComponent);
     }
 
     function replaceEditToInfo() {
-      replace(eventEditComponent, eventViewComponent);
+      replace(eventViewComponent, eventEditComponent);
     }
 
     render(eventViewComponent, this.#eventListComponent.element);
