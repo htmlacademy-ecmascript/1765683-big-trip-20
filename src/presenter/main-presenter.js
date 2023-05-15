@@ -1,5 +1,7 @@
+import SortPresenter from './sort-presenter.js';
 import SortView from '../view/sort-view.js';
 import FilterView from '../view/filter-view.js';
+import FiltersPresenter from './filters-presenter.js';
 import { render } from '../framework/render.js';
 
 export default class MainPresenter {
@@ -8,23 +10,29 @@ export default class MainPresenter {
   #eventContainer = null;
   #siteFiltersElement;
 
-  constructor({eventContainer, siteFiltersElement}){
+  constructor({ eventContainer, siteFiltersElement }) {
     this.#eventContainer = eventContainer;
     this.#siteFiltersElement = siteFiltersElement;
   }
 
-  init(){
-
+  init() {
     this.#renderSortComponent();
     this.#renderFilterComponent();
-
   }
 
   #renderSortComponent() {
-    render(this.#sortComponent, this.#eventContainer);
+    const sortPresenter = new SortPresenter({
+      sortComponent: this.#sortComponent,
+      eventContainer: this.#eventContainer,
+    });
+    sortPresenter.init();
   }
 
   #renderFilterComponent() {
-    render(this.#filterComponent, this.#siteFiltersElement);
+    const filtersPresenter = new FiltersPresenter({
+      filterComponent: this.#filterComponent,
+      filterElement: this.#siteFiltersElement,
+    });
+    filtersPresenter.init();
   }
 }
