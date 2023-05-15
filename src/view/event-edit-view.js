@@ -1,22 +1,20 @@
-import { createElement } from '../render.js';
 import { WAYPOINT_OPTIONS } from '../const.js';
 import dayjs from 'dayjs';
+import AbstractView from '../framework/view/abstract-view.js';
 
-function createEventEditTemplate(data){
-
+function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
 
   const timeFrom = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(dateTo).format('DD/MM/YY HH:mm');
 
-
   const createOffersByType = () => {
     let callOffers = '';
     if (offers.length) {
       callOffers = '';
-      offers.forEach((offer) =>{
+      offers.forEach((offer) => {
         const checked = Math.random() > 0.5 ? 'checked' : '';
-        if(offer.title && offer.price && offer.id) {
+        if (offer.title && offer.price && offer.id) {
           callOffers += `
           <div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
@@ -37,7 +35,7 @@ function createEventEditTemplate(data){
     if (WAYPOINT_OPTIONS.length) {
       WAYPOINT_OPTIONS.forEach((typeEvent) => {
         const checked = typeEvent === type ? 'checked' : '';
-        if(typeEvent) {
+        if (typeEvent) {
           selectType += `
           <div class="event__type-item">
             <input id="event-type-${typeEvent.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeEvent.toLowerCase()}" ${checked}>
@@ -49,8 +47,7 @@ function createEventEditTemplate(data){
     return selectType;
   };
 
-  return (/*html*/
-    `<li class="trip-events__item">
+  return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
@@ -110,28 +107,42 @@ function createEventEditTemplate(data){
           </section>
         </section>
       </form>
-    </li>`
-  );
+    </li>`;
 }
 
-export default class EventEditView {
-  constructor({ waypoints }) {
-    this.waypoints = waypoints;
+export default class EventEditView extends AbstractView {
+  #waypoint = null;
+  #handleSubmit = null;
+  #handleCancel = null;
+
+  constructor({ waypoint, onFormSubmit, onFormCancel }) {
+    super();
+    this.#waypoint = waypoint;
+    this.#handleSubmit = onFormSubmit;
+    this.#handleCancel = onFormCancel;
+
+    this.element
+      .querySelector('.event__save-btn')
+      .addEventListener('submit', this.#formSubmitHandler);
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formCancelHandler);
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#formCancelHandler);
   }
 
-  getTemplate(){
-    return createEventEditTemplate(this.waypoints);
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleSubmit();
+  };
 
-  getElement(){
-    if(!this.element){
-      this.element = createElement(this.getTemplate());
-    }
+  #formCancelHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCancel();
+  };
 
-    return this.element;
-  }
-
-  removeElement(){
-    this.element = null;
+  get template() {
+    return createEventEditTemplate(this.#waypoint);
   }
 }

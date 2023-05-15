@@ -1,31 +1,92 @@
-import { render } from '../render.js';
+import { render, replace } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventNewView from '../view/event-new-view.js';
 import EventView from '../view/event-view.js';
 import { getRandomArrayElement } from '../util.js';
+import EmptyListMessage from '../view/event-list-empty-view.js';
 
 export default class WaypointPresenter {
+  #eventContainer = null;
+  #waypointsModel = null;
+  #waypoints = [];
+  #eventListComponent = new EventListView();
+  #newEventComponent = new EventNewView();
+
   constructor({ eventContainer, waypointsModel }) {
-    this.eventContainer = eventContainer;
-    this.waypointsModel = waypointsModel;
+    this.#eventContainer = eventContainer;
+    this.#waypointsModel = waypointsModel;
   }
 
-  eventListComponent = new EventListView();
-  newEventComponent = new EventNewView();
-
   init() {
-    this.waypoints = [...this.waypointsModel.getWaypoints()];
+    this.#waypoints = [...this.#waypointsModel.waypoints];
 
-    render(this.eventListComponent, this.eventContainer);
-    render(new EventEditView({waypoints: getRandomArrayElement(this.waypoints)}), this.eventListComponent.getElement());
-    render(this.newEventComponent, this.eventListComponent.getElement());
+    this.#renderEventList();
 
-    for (let i = 0; i < this.waypoints.length; i++) {
-      render(
-        new EventView({ waypoint: this.waypoints[i] }),
-        this.eventListComponent.getElement()
-      );
+    if (this.#waypoints.length !== 0) {
+
+      this.#renderNewEventComponent();
+
+      for (let i = 0; i < this.#waypoints.length; i++) {
+        this.#renderWaypoints(this.#waypoints[i]);
+      }
+    } else {
+      this.#renderEmptyListMessage();
     }
+
+  }
+
+  #renderEventList() {
+    render(this.#eventListComponent, this.#eventContainer);
+  }
+
+  #renderNewEventComponent() {
+    render(this.#newEventComponent, this.#eventListComponent.element);
+  }
+
+  #renderWaypoints(waypoint) {
+
+    const escKeydownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditToInfo();
+        document.removeEventListener('keydown', escKeydownHandler);
+      }
+    };
+
+
+    const eventViewComponent = new EventView({
+      waypoint,
+      onEditClick: () => {
+        replaceInfoToEdit();
+        document.addEventListener('keydown', escKeydownHandler);
+      }
+    });
+
+    const eventEditComponent = new EventEditView({ waypoint: getRandomArrayElement(this.#waypoints),
+      onFormSubmit: () => {
+        replaceEditToInfo();
+        document.removeEventListener('keydown', escKeydownHandler);
+      },
+      onFormCancel: () => {
+        replaceEditToInfo();
+        document.removeEventListener('keydown', escKeydownHandler);
+      }});
+
+
+    function replaceInfoToEdit() {
+      replace(eventEditComponent, eventViewComponent);
+    }
+
+    function replaceEditToInfo() {
+      replace(eventViewComponent, eventEditComponent);
+    }
+
+    render(eventViewComponent, this.#eventListComponent.element);
+  }
+
+
+  #renderEmptyListMessage() {
+    render(new EmptyListMessage, this.#eventListComponent.element);
   }
 }

@@ -1,21 +1,30 @@
 import SortView from '../view/sort-view.js';
 import FilterView from '../view/filter-view.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
-const siteHeaderElement = document.querySelector('header');
-const siteFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
 export default class MainPresenter {
-  sortComponent = new SortView();
-  filterComponent = new FilterView();
+  #sortComponent = new SortView();
+  #filterComponent = new FilterView();
+  #eventContainer = null;
+  #siteFiltersElement;
 
-  constructor({eventContainer}){
-    this.eventContainer = eventContainer;
+  constructor({eventContainer, siteFiltersElement}){
+    this.#eventContainer = eventContainer;
+    this.#siteFiltersElement = siteFiltersElement;
   }
 
   init(){
 
-    render(this.sortComponent, this.eventContainer);
-    render(this.filterComponent, siteFiltersElement);
+    this.#renderSortComponent();
+    this.#renderFilterComponent();
 
+  }
+
+  #renderSortComponent() {
+    render(this.#sortComponent, this.#eventContainer);
+  }
+
+  #renderFilterComponent() {
+    render(this.#filterComponent, this.#siteFiltersElement);
   }
 }

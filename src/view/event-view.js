@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../util.js';
 
 function createEventTemplate(data) {
@@ -43,24 +43,27 @@ function createEventTemplate(data) {
       </li>`;
 }
 
-export default class EventView {
-  constructor({ waypoint }) {
-    this.waypoint = waypoint;
+export default class EventView extends AbstractView {
+  #waypoint = null;
+  #onEditClick = null;
+
+  constructor({ waypoint, onEditClick }) {
+    super();
+    this.#waypoint = waypoint;
+    this.#onEditClick = onEditClick;
+
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#onEvtClick);
   }
 
-  getTemplate() {
-    return createEventTemplate(this.waypoint);
+  #onEvtClick = (evt) => {
+    evt.preventDefault();
+    this.#onEditClick();
+  };
+
+  get template() {
+    return createEventTemplate(this.#waypoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }
