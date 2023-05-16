@@ -2,7 +2,7 @@ import SortPresenter from './sort-presenter.js';
 import SortView from '../view/sort-view.js';
 import FilterView from '../view/filter-view.js';
 import FiltersPresenter from './filters-presenter.js';
-import { render } from '../framework/render.js';
+
 
 export default class MainPresenter {
   #sortComponent = new SortView();
