@@ -1,10 +1,8 @@
-import { render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
-import EventEditView from '../view/event-edit-view.js';
 import EventNewView from '../view/event-new-view.js';
-import EventView from '../view/event-view.js';
-import { getRandomArrayElement } from '../util.js';
 import EmptyListMessage from '../view/event-list-empty-view.js';
+import SingleWaypointPresenter from './single-waypoint-presenter.js';
 
 export default class WaypointPresenter {
   #eventContainer = null;
@@ -45,44 +43,10 @@ export default class WaypointPresenter {
   }
 
   #renderWaypoints(waypoint) {
-
-    const escKeydownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceEditToInfo();
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    };
-
-
-    const eventViewComponent = new EventView({
-      waypoint,
-      onEditClick: () => {
-        replaceInfoToEdit();
-        document.addEventListener('keydown', escKeydownHandler);
-      }
+    const singleWaypointPresenter = new SingleWaypointPresenter({eventListComponent: this.#eventListComponent.element
     });
+    singleWaypointPresenter.init(waypoint);
 
-    const eventEditComponent = new EventEditView({ waypoint: getRandomArrayElement(this.#waypoints),
-      onFormSubmit: () => {
-        replaceEditToInfo();
-        document.removeEventListener('keydown', escKeydownHandler);
-      },
-      onFormCancel: () => {
-        replaceEditToInfo();
-        document.removeEventListener('keydown', escKeydownHandler);
-      }});
-
-
-    function replaceInfoToEdit() {
-      replace(eventEditComponent, eventViewComponent);
-    }
-
-    function replaceEditToInfo() {
-      replace(eventViewComponent, eventEditComponent);
-    }
-
-    render(eventViewComponent, this.#eventListComponent.element);
   }
 
 
