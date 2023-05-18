@@ -13,4 +13,8 @@ function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-export { getRandomNumber, getRandomArrayElement, humanizeDate };
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export { getRandomNumber, getRandomArrayElement, humanizeDate, updateItem };

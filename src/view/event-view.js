@@ -46,20 +46,29 @@ function createEventTemplate(data) {
 export default class EventView extends AbstractView {
   #waypoint = null;
   #onEditClick = null;
+  #onFavoriteClick = null;
 
-  constructor({ waypoint, onEditClick }) {
+  constructor({ waypoint, onEditClick, onFavoriteClick }) {
     super();
     this.#waypoint = waypoint;
     this.#onEditClick = onEditClick;
+    this.#onFavoriteClick = onFavoriteClick;
 
     this.element
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#onEvtClick);
+
+    this.element.querySelector('.event__favorite-icon').addEventListener('click',this.#favoriteClick);
   }
 
   #onEvtClick = (evt) => {
     evt.preventDefault();
     this.#onEditClick();
+  };
+
+  #favoriteClick = (evt) => {
+    evt.preventDefault();
+    this.#onFavoriteClick();
   };
 
   get template() {

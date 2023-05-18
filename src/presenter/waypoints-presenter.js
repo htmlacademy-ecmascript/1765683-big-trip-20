@@ -1,8 +1,9 @@
-import { render } from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import EventNewView from '../view/event-new-view.js';
 import EmptyListMessage from '../view/event-list-empty-view.js';
 import SingleWaypointPresenter from './single-waypoint-presenter.js';
+import { updateItem } from '../util.js';
 
 export default class WaypointPresenter {
   #eventContainer = null;
@@ -10,6 +11,7 @@ export default class WaypointPresenter {
   #waypoints = [];
   #eventListComponent = new EventListView();
   #newEventComponent = new EventNewView();
+  #waypointPresenters = new Map();
 
   constructor({ eventContainer, waypointsModel }) {
     this.#eventContainer = eventContainer;
@@ -46,8 +48,20 @@ export default class WaypointPresenter {
     const singleWaypointPresenter = new SingleWaypointPresenter({eventListComponent: this.#eventListComponent.element
     });
     singleWaypointPresenter.init(waypoint);
+    this.#waypointPresenters.set(waypoint.id, singleWaypointPresenter);
 
   }
+
+  #clearWaypointList() {
+    this.#waypointPresenters.forEach((presenter) => presenter.destroy());
+    this.#waypointPresenters.clear();
+    remove(this.this.#eventListComponent);
+  }
+
+  #handleWaypointChange = (updatedWaypoint) => {
+    this.this.#waypoints = updateItem(this.this.#waypoints, updatedWaypoint);
+    this.#waypointPresenters.get(updatedWaypoint.id).init(updatedWaypoint);
+  };
 
 
   #renderEmptyListMessage() {
