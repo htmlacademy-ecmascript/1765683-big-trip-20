@@ -3,16 +3,24 @@ import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
 import { replace, remove } from '../framework/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class SingleWaypointPresenter {
   #waypoint = null;
   #eventViewComponent = null;
   #eventListComponent = null;
   #eventEditComponent = null;
   #handleDataChange = null;
+  #mode = Mode.DEFAULT;
+  #handleModeChange = null;
 
-  constructor({ eventListComponent, onDataChange }) {
+  constructor({ eventListComponent, onDataChange, onModeChange }) {
     this.#eventListComponent = eventListComponent;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(waypoint) {
@@ -38,11 +46,11 @@ export default class SingleWaypointPresenter {
       return;
     }
 
-    if (this.#eventListComponent.contains(prevEventComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventViewComponent, prevEventComponent);
     }
 
-    if (this.#eventListComponent.contains(prevEventEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
 
@@ -55,14 +63,23 @@ export default class SingleWaypointPresenter {
     remove(this.#eventEditComponent);
   }
 
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceEditToInfo();
+    }
+  }
+
   #replaceInfoToEdit() {
     replace(this.#eventEditComponent, this.#eventViewComponent);
     document.addEventListener('keydown', this.#escKeydownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceEditToInfo() {
     replace(this.#eventViewComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#escKeydownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
   #escKeydownHandler = (evt) => {

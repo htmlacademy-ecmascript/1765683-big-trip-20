@@ -24,7 +24,6 @@ export default class WaypointPresenter {
     this.#renderEventList();
 
     if (this.#waypoints.length !== 0) {
-
       this.#renderNewEventComponent();
 
       for (let i = 0; i < this.#waypoints.length; i++) {
@@ -33,8 +32,11 @@ export default class WaypointPresenter {
     } else {
       this.#renderEmptyListMessage();
     }
-
   }
+
+  #handleModeChange = () => {
+    this.#waypointPresenters.forEach((presenter) => presenter.resetView());
+  };
 
   #renderEventList() {
     render(this.#eventListComponent, this.#eventContainer);
@@ -45,11 +47,13 @@ export default class WaypointPresenter {
   }
 
   #renderWaypoints(waypoint) {
-    const singleWaypointPresenter = new SingleWaypointPresenter({eventListComponent: this.#eventListComponent.element, onDataChange: this.#handleWaypointChange
+    const singleWaypointPresenter = new SingleWaypointPresenter({
+      eventListComponent: this.#eventListComponent.element,
+      onDataChange: this.#handleWaypointChange,
+      onModeChange: this.#handleModeChange,
     });
     singleWaypointPresenter.init(waypoint);
     this.#waypointPresenters.set(waypoint.id, singleWaypointPresenter);
-
   }
 
   #clearWaypointList() {
@@ -63,8 +67,7 @@ export default class WaypointPresenter {
     this.#waypointPresenters.get(updatedWaypoint.id).init(updatedWaypoint);
   };
 
-
   #renderEmptyListMessage() {
-    render(new EmptyListMessage, this.#eventListComponent.element);
+    render(new EmptyListMessage(), this.#eventListComponent.element);
   }
 }
