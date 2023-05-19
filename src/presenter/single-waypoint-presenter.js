@@ -98,8 +98,7 @@ export default class SingleWaypointPresenter {
     this.#replaceInfoToEdit();
   };
 
-  #replaceInfoHandler = (waypoint) => {
-    this.#handleDataChange(waypoint);
+  #replaceInfoHandler = () => {
     this.#replaceEditToInfo();
   };
 }
