@@ -8,9 +8,11 @@ export default class SingleWaypointPresenter {
   #eventViewComponent = null;
   #eventListComponent = null;
   #eventEditComponent = null;
+  #handleDataChange = null;
 
-  constructor({ eventListComponent }) {
+  constructor({ eventListComponent, onDataChange }) {
     this.#eventListComponent = eventListComponent;
+    this.#handleDataChange = onDataChange;
   }
 
   init(waypoint) {
@@ -22,6 +24,7 @@ export default class SingleWaypointPresenter {
     this.#eventViewComponent = new EventView({
       waypoint: this.#waypoint,
       onEditClick: this.#replaceEditHandler,
+      onFavoriteClick: this.#handleFavoriteClick
     });
 
     this.#eventEditComponent = new EventEditView({
@@ -70,11 +73,16 @@ export default class SingleWaypointPresenter {
     }
   };
 
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#waypoint, isFavorite: !this.#waypoint.isFavorite});
+  };
+
   #replaceEditHandler = () => {
     this.#replaceInfoToEdit();
   };
 
-  #replaceInfoHandler = () => {
+  #replaceInfoHandler = (waypoint) => {
+    this.#handleDataChange(waypoint);
     this.#replaceEditToInfo();
   };
 }

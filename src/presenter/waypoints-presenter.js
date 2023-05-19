@@ -45,7 +45,7 @@ export default class WaypointPresenter {
   }
 
   #renderWaypoints(waypoint) {
-    const singleWaypointPresenter = new SingleWaypointPresenter({eventListComponent: this.#eventListComponent.element
+    const singleWaypointPresenter = new SingleWaypointPresenter({eventListComponent: this.#eventListComponent.element, onDataChange: this.#handleWaypointChange
     });
     singleWaypointPresenter.init(waypoint);
     this.#waypointPresenters.set(waypoint.id, singleWaypointPresenter);
@@ -59,7 +59,7 @@ export default class WaypointPresenter {
   }
 
   #handleWaypointChange = (updatedWaypoint) => {
-    this.this.#waypoints = updateItem(this.this.#waypoints, updatedWaypoint);
+    this.#waypoints = updateItem(this.#waypoints, updatedWaypoint);
     this.#waypointPresenters.get(updatedWaypoint.id).init(updatedWaypoint);
   };
 

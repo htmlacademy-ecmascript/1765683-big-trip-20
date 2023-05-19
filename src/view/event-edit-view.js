@@ -134,7 +134,7 @@ export default class EventEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleSubmit();
+    this.#handleSubmit(this.#waypoint);
   };
 
   #formCancelHandler = (evt) => {
