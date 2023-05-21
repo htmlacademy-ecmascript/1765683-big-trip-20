@@ -1,4 +1,4 @@
-import { WAYPOINT_OPTIONS, TRAVEL_WAYPOINTS, TOTAL_PRICE, OFFERS, OFFERS_PRICE } from './const.js';
+import { WAYPOINT_OPTIONS, TRAVEL_WAYPOINTS, TOTAL_PRICE, OFFERS, OFFERS_PRICE, DATE_FROM, DATE_TO } from './const.js';
 import { getRandomNumber, getRandomArrayElement } from './util.js';
 import { nanoid } from 'nanoid';
 
@@ -36,8 +36,8 @@ export const getRandomData = () => {
   return {
     'id': nanoid(),
     'basePrice': getRandomArrayElement(TOTAL_PRICE),
-    'dateFrom': '2019-07-10T22:55:56.845Z',
-    'dateTo': '2019-07-11T11:22:13.375Z',
+    'dateFrom': getRandomArrayElement(DATE_FROM),
+    'dateTo': getRandomArrayElement(DATE_TO),
     'destination': mapWaypoints.get(getRandomArrayElement(TRAVEL_WAYPOINTS)),
     'isFavorite': [true,false][Math.floor(Math.random() * 2)],
     'offers': mapOptions.get(type),

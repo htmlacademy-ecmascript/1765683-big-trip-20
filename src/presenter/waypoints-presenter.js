@@ -1,19 +1,22 @@
-import { render, remove } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import EventNewView from '../view/event-new-view.js';
 import EmptyListMessage from '../view/event-list-empty-view.js';
 import SingleWaypointPresenter from './single-waypoint-presenter.js';
-import { updateItem } from '../mock/util.js';
+import { updateItem, sortPointByPrice, sortPointByTime } from '../mock/util.js';
 import SortView from '../view/sort-view.js';
+import { SORT_TYPE } from '../mock/const.js';
 
 export default class WaypointPresenter {
   #eventContainer = null;
   #waypointsModel = null;
   #waypoints = [];
+  #sourcedWaypoints = [];
   #eventListComponent = new EventListView();
   #newEventComponent = new EventNewView();
   #waypointPresenters = new Map();
   #sortComponent = null;
+  #currentSortType = SORT_TYPE.default;
 
   constructor({ eventContainer, waypointsModel }) {
     this.#eventContainer = eventContainer;
@@ -23,10 +26,14 @@ export default class WaypointPresenter {
   init() {
     this.#waypoints = [...this.#waypointsModel.waypoints];
 
+    this.#sourcedWaypoints = [...this.#waypointsModel.waypoints];
+
     this.#renderSort();
     this.#renderEventList();
+    this.#renderPage();
+  }
 
-
+  #renderPage() {
     if (this.#waypoints.length !== 0) {
       this.#renderNewEventComponent();
 
@@ -42,12 +49,22 @@ export default class WaypointPresenter {
     this.#waypointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleSortTypeChange = (sortType) => {
-    // - Сортируем задачи
-    // - Очищаем список
-    // - Рендерим список заново
-  };
+  #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange,
+    });
 
+    render(this.#sortComponent, this.#eventContainer);
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortWaypoints(sortType);
+    this.#clearWaypointList();
+    this.#renderPage();
+  };
 
   #renderEventList() {
     render(this.#eventListComponent, this.#eventContainer);
@@ -67,20 +84,32 @@ export default class WaypointPresenter {
     this.#waypointPresenters.set(waypoint.id, singleWaypointPresenter);
   }
 
-  #renderSort() {
-    this.#sortComponent = new SortView({onSortTypeChange: this.#handleSortTypeChange});
+  #sortWaypoints(sortType) {
+    switch (sortType) {
+      case SORT_TYPE.time:
+        this.#waypoints = [...sortPointByTime(this.#waypoints)];
+        break;
+      case SORT_TYPE.price:
+        this.#waypoints = [...sortPointByPrice(this.#waypoints)];
+        break;
+      default:
+        this.#waypoints = [...this.#sourcedWaypoints];
+    }
 
-    render(this.#sortComponent, this.#eventContainer);
+    this.#currentSortType = sortType;
   }
 
   #clearWaypointList() {
     this.#waypointPresenters.forEach((presenter) => presenter.destroy());
     this.#waypointPresenters.clear();
-    remove(this.this.#eventListComponent);
   }
 
   #handleWaypointChange = (updatedWaypoint) => {
     this.#waypoints = updateItem(this.#waypoints, updatedWaypoint);
+    this.#sourcedWaypoints = updateItem(
+      this.#sourcedWaypoints,
+      updatedWaypoint
+    );
     this.#waypointPresenters.get(updatedWaypoint.id).init(updatedWaypoint);
   };
 
