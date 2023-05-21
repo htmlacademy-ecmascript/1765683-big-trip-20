@@ -2,7 +2,8 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../mock/util.js';
 
 function createEventTemplate(data) {
-  const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = data;
+  const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } =
+    data;
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
 
   return `<li class="trip-events__item">
@@ -59,7 +60,9 @@ export default class EventView extends AbstractView {
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#onEvtClick);
 
-    this.element.querySelector('.event__favorite-icon').addEventListener('click',this.#favoriteClickHandler);
+    this.element
+      .querySelector('.event__favorite-icon')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 
   #onEvtClick = (evt) => {
@@ -75,5 +78,4 @@ export default class EventView extends AbstractView {
   get template() {
     return createEventTemplate(this.#waypoint);
   }
-
 }

@@ -1,7 +1,6 @@
 import FilterView from '../view/filter-view.js';
 import FiltersPresenter from './filters-presenter.js';
 
-
 export default class MainPresenter {
   #filterComponent = new FilterView();
   #eventContainer = null;

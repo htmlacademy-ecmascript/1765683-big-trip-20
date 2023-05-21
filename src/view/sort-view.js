@@ -2,8 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { SORT_TYPE, LABEL } from '../mock/const.js';
 
 function createSortTemplate() {
-  return (
-    `
+  return `
   <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   <div class="trip-sort__item  trip-sort__item--day">
     <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day">
@@ -30,16 +29,14 @@ function createSortTemplate() {
     <label class="trip-sort__btn" data-sort-type=${SORT_TYPE.offers} for="sort-offer">Offers</label>
   </div>
 </form>
-`
-  );
+`;
 }
 
 export default class SortView extends AbstractView {
-
   #handleSortTypeChange = null;
   #sortType = null;
 
-  constructor({onSortTypeChange}) {
+  constructor({ onSortTypeChange }) {
     super();
     this.#handleSortTypeChange = onSortTypeChange;
 
@@ -52,12 +49,14 @@ export default class SortView extends AbstractView {
 
   #sortTypeChangeHandler = (evt) => {
     this.#sortType = evt.target.dataset.sortType;
-    if (evt.target.tagName !== LABEL || this.#sortType === SORT_TYPE.event || this.#sortType === SORT_TYPE.offers) {
+    if (
+      evt.target.tagName !== LABEL ||
+      this.#sortType === SORT_TYPE.event ||
+      this.#sortType === SORT_TYPE.offers
+    ) {
       return;
     }
     evt.preventDefault();
     this.#handleSortTypeChange(this.#sortType);
   };
-
 }
-
