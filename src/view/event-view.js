@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDate } from '../util.js';
+import { humanizeDate } from '../mock/util.js';
 
 function createEventTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = data;

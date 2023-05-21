@@ -1,4 +1,4 @@
-import { WAYPOINT_OPTIONS } from '../const.js';
+import { WAYPOINT_OPTIONS } from '../mock/const.js';
 import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view.js';
 

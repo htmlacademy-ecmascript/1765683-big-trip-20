@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SORT_TYPES } from '../const.js';
+import { SORT_TYPES, LABEL } from '../mock/const.js';
 
 function createSortTemplate() {
   return (
@@ -36,9 +36,27 @@ function createSortTemplate() {
 
 export default class SortView extends AbstractView {
 
+  #handleSortTypeChange = null;
+
+  constructor({onSortTypeChange}) {
+    super();
+    this.#handleSortTypeChange = onSortTypeChange;
+
+    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+  }
+
   get template() {
     return createSortTemplate();
   }
+
+  #sortTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== LABEL) {
+      return;
+    }
+
+    evt.preventDefault();
+    this.#handleSortTypeChange(evt.target.dataset.sortType);
+  };
 
 }
 

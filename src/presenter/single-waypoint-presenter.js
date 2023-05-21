@@ -2,11 +2,7 @@ import { render } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
 import { replace, remove } from '../framework/render.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { Mode } from '../mock/const.js';
 
 export default class SingleWaypointPresenter {
   #waypoint = null;

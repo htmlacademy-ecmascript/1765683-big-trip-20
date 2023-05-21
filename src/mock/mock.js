@@ -1,5 +1,5 @@
-import { WAYPOINT_OPTIONS, TRAVEL_WAYPOINTS, TOTAL_PRICE, OFFERS, OFFERS_PRICE } from '../const.js';
-import { getRandomNumber, getRandomArrayElement } from '../util.js';
+import { WAYPOINT_OPTIONS, TRAVEL_WAYPOINTS, TOTAL_PRICE, OFFERS, OFFERS_PRICE } from './const.js';
+import { getRandomNumber, getRandomArrayElement } from './util.js';
 import { nanoid } from 'nanoid';
 
 const mapWaypoints = new Map();

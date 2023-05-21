@@ -25,6 +25,11 @@ const OFFERS_PRICE = [20, 50, 140, 200, 600, ];
 
 const TOTAL_PRICE = [20, 160, 600, 830];
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 const SORT_TYPES = {
   day: 'day',
   event: 'event',
@@ -33,4 +38,6 @@ const SORT_TYPES = {
   offers: 'offers',
 };
 
-export { TRAVEL_WAYPOINTS, WAYPOINT_OPTIONS, TOTAL_PRICE, OFFERS, OFFERS_PRICE, SORT_TYPES };
+const LABEL = 'LABEL';
+
+export { TRAVEL_WAYPOINTS, WAYPOINT_OPTIONS, TOTAL_PRICE, OFFERS, OFFERS_PRICE, Mode, SORT_TYPES, LABEL };

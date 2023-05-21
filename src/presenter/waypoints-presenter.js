@@ -3,7 +3,8 @@ import EventListView from '../view/event-list-view.js';
 import EventNewView from '../view/event-new-view.js';
 import EmptyListMessage from '../view/event-list-empty-view.js';
 import SingleWaypointPresenter from './single-waypoint-presenter.js';
-import { updateItem } from '../util.js';
+import { updateItem } from '../mock/util.js';
+import SortView from '../view/sort-view.js';
 
 export default class WaypointPresenter {
   #eventContainer = null;
@@ -12,6 +13,7 @@ export default class WaypointPresenter {
   #eventListComponent = new EventListView();
   #newEventComponent = new EventNewView();
   #waypointPresenters = new Map();
+  #sortComponent = null;
 
   constructor({ eventContainer, waypointsModel }) {
     this.#eventContainer = eventContainer;
@@ -21,7 +23,9 @@ export default class WaypointPresenter {
   init() {
     this.#waypoints = [...this.#waypointsModel.waypoints];
 
+    this.#renderSort();
     this.#renderEventList();
+
 
     if (this.#waypoints.length !== 0) {
       this.#renderNewEventComponent();
@@ -37,6 +41,13 @@ export default class WaypointPresenter {
   #handleModeChange = () => {
     this.#waypointPresenters.forEach((presenter) => presenter.resetView());
   };
+
+  #handleSortTypeChange = (sortType) => {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
+  };
+
 
   #renderEventList() {
     render(this.#eventListComponent, this.#eventContainer);
@@ -54,6 +65,12 @@ export default class WaypointPresenter {
     });
     singleWaypointPresenter.init(waypoint);
     this.#waypointPresenters.set(waypoint.id, singleWaypointPresenter);
+  }
+
+  #renderSort() {
+    this.#sortComponent = new SortView({onSortTypeChange: this.#handleSortTypeChange});
+
+    render(this.#sortComponent, this.#eventContainer);
   }
 
   #clearWaypointList() {
