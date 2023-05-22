@@ -1,8 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createEventNewTemplate(){
-  return (
-    `<li class="trip-events__item">
+function createEventNewTemplate() {
+  return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
@@ -142,15 +141,11 @@ function createEventNewTemplate(){
           </section>
         </section>
       </form>
-    </li>`
-  );
+    </li>`;
 }
 
 export default class EventNewView extends AbstractView {
-
-  get template(){
+  get template() {
     return createEventNewTemplate();
   }
-
-
 }
