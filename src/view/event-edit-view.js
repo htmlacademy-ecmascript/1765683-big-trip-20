@@ -1,6 +1,8 @@
 import { WAYPOINT_OPTIONS } from '../mock/const.js';
 import dayjs from 'dayjs';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -75,11 +77,11 @@ function createEventEditTemplate(data) {
             </datalist>
           </div>
           <div class="event__field-group  event__field-group--time">
-            <label class="visually-hidden" for="event-start-time-1">${timeFrom}</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+            <label class="visually-hidden" for="event-start-time-1">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
             &mdash;
-            <label class="visually-hidden" for="event-end-time-1">${timeTo}</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+            <label class="visually-hidden" for="event-end-time-1">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${timeTo}>
           </div>
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
@@ -110,17 +112,43 @@ function createEventEditTemplate(data) {
     </li>`;
 }
 
-export default class EventEditView extends AbstractView {
+export default class EventEditView extends AbstractStatefulView {
+
+  #datePickerFrom = null;
+  #datePickerTo = null;
   #waypoint = null;
   #handleSubmit = null;
   #handleCancel = null;
 
   constructor({ waypoint, onFormSubmit, onFormCancel }) {
     super();
+    this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#waypoint = waypoint;
     this.#handleSubmit = onFormSubmit;
     this.#handleCancel = onFormCancel;
 
+    this._restoreHandlers();
+  }
+
+  get template() {
+    return createEventEditTemplate(EventEditView.parseStateToWaypoint(this._state));
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datePickerFrom) {
+      this.#datePickerFrom.destroy();
+      this.#datePickerFrom = null;
+    }
+
+    if (this.#datePickerTo) {
+      this.#datePickerTo.destroy();
+      this.#datePickerTo = null;
+    }
+  }
+
+  _restoreHandlers() {
     this.element
       .querySelector('.event__save-btn')
       .addEventListener('submit', this.#formSubmitHandler);
@@ -130,6 +158,8 @@ export default class EventEditView extends AbstractView {
     this.element
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#formCancelHandler);
+
+    this.#setDatePicker();
   }
 
   #formSubmitHandler = (evt) => {
@@ -142,7 +172,55 @@ export default class EventEditView extends AbstractView {
     this.#handleCancel();
   };
 
-  get template() {
-    return createEventEditTemplate(this.#waypoint);
+  #userFromDateChangeHandler = ([ userDateFrom ]) => {
+    this.updateElement({
+      dateFrom: userDateFrom
+    });
+  };
+
+  #userToDateChangeHandler = ([ userDateTo ]) => {
+    this.updateElement({
+      dateTo: userDateTo
+    });
+  };
+
+  #setDatePicker() {
+    if (this._state.dateFrom) {
+      this.#datePickerFrom = flatpickr(
+        this.element.querySelector('input[name="event-start-time"]'),
+        {
+          enableTime: true,
+          // eslint-disable-next-line camelcase
+          time_24hr: true,
+          dateFormat: 'd/m/y H:i',
+          defaultDate: this._state.dateFrom,
+          onChange: this.#userFromDateChangeHandler
+        }
+      );
+    }
+
+    if (this._state.dateTo) {
+      this.#datePickerTo = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          enableTime: true,
+          // eslint-disable-next-line camelcase
+          time_24hr: true,
+          dateFormat: 'd/m/y H:i',
+          defaultDate: this._state.dateTo,
+          onChange: this.#userToDateChangeHandler,
+        }
+      );
+    }
+  }
+
+  static parseWaypointToState(state) {
+    return { ...state };
+  }
+
+  static parseStateToWaypoint(state) {
+    const waypoint = { ...state };
+
+    return waypoint;
   }
 }
