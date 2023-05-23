@@ -191,7 +191,7 @@ export default class EventEditView extends AbstractStatefulView {
         {
           enableTime: true,
           // eslint-disable-next-line camelcase
-          time_24hr: true,
+          time_24hr: true, // flatpickr property
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
           onChange: this.#userFromDateChangeHandler
@@ -205,7 +205,7 @@ export default class EventEditView extends AbstractStatefulView {
         {
           enableTime: true,
           // eslint-disable-next-line camelcase
-          time_24hr: true,
+          time_24hr: true, // flatpickr property
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateTo,
           onChange: this.#userToDateChangeHandler,
