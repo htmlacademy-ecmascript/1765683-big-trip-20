@@ -189,6 +189,9 @@ export default class EventEditView extends AbstractStatefulView {
       this.#datePickerFrom = flatpickr(
         this.element.querySelector('input[name="event-start-time"]'),
         {
+          enableTime: true,
+          // eslint-disable-next-line camelcase
+          time_24hr: true,
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
           onChange: this.#userFromDateChangeHandler
@@ -201,6 +204,8 @@ export default class EventEditView extends AbstractStatefulView {
         this.element.querySelector('#event-end-time-1'),
         {
           enableTime: true,
+          // eslint-disable-next-line camelcase
+          time_24hr: true,
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateTo,
           onChange: this.#userToDateChangeHandler,
