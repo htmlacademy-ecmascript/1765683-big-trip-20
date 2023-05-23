@@ -1,6 +1,6 @@
 import { WAYPOINT_OPTIONS } from '../mock/const.js';
 import dayjs from 'dayjs';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -110,7 +110,7 @@ function createEventEditTemplate(data) {
     </li>`;
 }
 
-export default class EventEditView extends AbstractView {
+export default class EventEditView extends AbstractStatefulView {
   #waypoint = null;
   #handleSubmit = null;
   #handleCancel = null;
@@ -121,6 +121,10 @@ export default class EventEditView extends AbstractView {
     this.#handleSubmit = onFormSubmit;
     this.#handleCancel = onFormCancel;
 
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element
       .querySelector('.event__save-btn')
       .addEventListener('submit', this.#formSubmitHandler);
