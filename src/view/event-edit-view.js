@@ -77,11 +77,11 @@ function createEventEditTemplate(data) {
             </datalist>
           </div>
           <div class="event__field-group  event__field-group--time">
-            <label class="visually-hidden" for="event-start-time-1">${timeFrom}</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+            <label class="visually-hidden" for="event-start-time-1">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
             &mdash;
-            <label class="visually-hidden" for="event-end-time-1">${timeTo}</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+            <label class="visually-hidden" for="event-end-time-1">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${timeTo}>
           </div>
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
@@ -114,7 +114,8 @@ function createEventEditTemplate(data) {
 
 export default class EventEditView extends AbstractStatefulView {
 
-  #datepicker = null;
+  #datePickerFrom = null;
+  #datePickerTo = null;
   #waypoint = null;
   #handleSubmit = null;
   #handleCancel = null;
@@ -136,9 +137,14 @@ export default class EventEditView extends AbstractStatefulView {
   removeElement() {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+    if (this.#datePickerFrom) {
+      this.#datePickerFrom.destroy();
+      this.#datePickerFrom = null;
+    }
+
+    if (this.#datePickerTo) {
+      this.#datePickerTo.destroy();
+      this.#datePickerTo = null;
     }
   }
 
@@ -172,14 +178,32 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
+  #userToDateChangeHandler = ([ userDateTo ]) => {
+    this.updateElement({
+      dateTo: userDateTo
+    });
+  };
+
   #setDatePicker() {
     if (this._state.dateFrom) {
-      this.#datepicker = flatpickr(
+      this.#datePickerFrom = flatpickr(
         this.element.querySelector('input[name="event-start-time"]'),
         {
-          dateFormat: 'j F',
+          dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
           onChange: this.#userFromDateChangeHandler
+        }
+      );
+    }
+
+    if (this._state.dateTo) {
+      this.#datePickerTo = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          defaultDate: this._state.dateTo,
+          onChange: this.#userToDateChangeHandler,
         }
       );
     }
