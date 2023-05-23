@@ -1,6 +1,8 @@
 import { WAYPOINT_OPTIONS } from '../mock/const.js';
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -111,17 +113,33 @@ function createEventEditTemplate(data) {
 }
 
 export default class EventEditView extends AbstractStatefulView {
+
+  #datepicker = null;
   #waypoint = null;
   #handleSubmit = null;
   #handleCancel = null;
 
   constructor({ waypoint, onFormSubmit, onFormCancel }) {
     super();
+    this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#waypoint = waypoint;
     this.#handleSubmit = onFormSubmit;
     this.#handleCancel = onFormCancel;
 
     this._restoreHandlers();
+  }
+
+  get template() {
+    return createEventEditTemplate(EventEditView.parseStateToWaypoint(this._state));
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   _restoreHandlers() {
@@ -134,6 +152,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.element
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#formCancelHandler);
+
+    this.#setDatePicker();
   }
 
   #formSubmitHandler = (evt) => {
@@ -146,7 +166,32 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleCancel();
   };
 
-  get template() {
-    return createEventEditTemplate(this.#waypoint);
+  #userFromDateChangeHandler = ([ userDateFrom ]) => {
+    this.updateElement({
+      dateFrom: userDateFrom
+    });
+  };
+
+  #setDatePicker() {
+    if (this._state.dateFrom) {
+      this.#datepicker = flatpickr(
+        this.element.querySelector('input[name="event-start-time"]'),
+        {
+          dateFormat: 'j F',
+          defaultDate: this._state.dateFrom,
+          onChange: this.#userFromDateChangeHandler
+        }
+      );
+    }
+  }
+
+  static parseWaypointToState(state) {
+    return { ...state };
+  }
+
+  static parseStateToWaypoint(state) {
+    const waypoint = { ...state };
+
+    return waypoint;
   }
 }
