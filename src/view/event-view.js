@@ -1,9 +1,13 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDate } from '../mock/util.js';
+import { humanizeDate, getDuration } from '../mock/util.js';
 
 function createEventTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = data;
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
+
+
+  const { hourDur, minuteDur } = getDuration(dateFrom, dateTo);
+  const duration = `${ hourDur ? `${ hourDur }H` : ''} ${ minuteDur}M`;
 
   return `<li class="trip-events__item">
     <div class="event">
@@ -18,7 +22,7 @@ function createEventTemplate(data) {
             &mdash;
             <time class="event__end-time" datetime="2019-03-18T11:00">${humanizeDate(dateTo)}</time>
           </p>
-          <p class="event__duration">30M</p>
+          <p class="event__duration">${duration}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

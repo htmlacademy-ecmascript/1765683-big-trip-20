@@ -14,19 +14,37 @@ function getRandomArrayElement(items) {
 }
 
 function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
+  return items.map((item) => (item.id === update.id ? update : item));
 }
 
-function durationPoint(point) {
-  return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
+function durationWaypoint(waypoint) {
+  return dayjs(waypoint.dateTo).diff(dayjs(waypoint.dateFrom));
 }
 
 function sortPointByTime(points) {
-  return points.sort((a, b) => durationPoint(b) - durationPoint(a));
+  return points.sort((a, b) => durationWaypoint(b) - durationWaypoint(a));
 }
 
 function sortPointByPrice(points) {
   return points.sort((a, b) => b.basePrice - a.basePrice);
 }
 
-export { getRandomNumber, getRandomArrayElement, humanizeDate, updateItem, sortPointByPrice, sortPointByTime };
+const getDatesDiff = (dateFrom, dateTo, time) =>
+  time ? dayjs(dateTo).diff(dayjs(dateFrom), time) : dayjs(dateTo).diff(dayjs(dateFrom));
+
+const getDuration = (dateFrom, dateTo) => {
+  const minutes = getDatesDiff(dateFrom, dateTo, 'minute');
+  const hourDur = parseInt(minutes / 60, 10);
+  const minuteDur = dayjs().minute(minutes).$m;
+  return { hourDur, minuteDur };
+};
+
+export {
+  getRandomNumber,
+  getRandomArrayElement,
+  humanizeDate,
+  updateItem,
+  sortPointByPrice,
+  sortPointByTime,
+  getDuration
+};
