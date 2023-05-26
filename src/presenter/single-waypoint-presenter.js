@@ -82,6 +82,7 @@ export default class SingleWaypointPresenter {
   #escKeydownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#waypoint);
       this.#replaceEditToInfo();
       document.removeEventListener('keydown', this.#escKeydownHandler);
     }

@@ -89,7 +89,7 @@ function createEventEditTemplate(data) {
               <span class="visually-hidden">${basePrice}</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
           </div>
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Delete</button>
@@ -166,6 +166,9 @@ export default class EventEditView extends AbstractStatefulView {
     this.element
       .querySelector('.event__input--destination')
       .addEventListener('change', this.#formDestChangeHandler);
+    this.element
+      .querySelector('.event__input--price')
+      .addEventListener('input', this.#priceChangeHandler);
 
     this.#setDatePicker();
   }
@@ -188,10 +191,17 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
   #formDestChangeHandler = (evt) => {
     mapWaypoints.get(evt.target.value);
     this.updateElement({
-      destination: mapWaypoints.get(evt.target.value)
+      destination: mapWaypoints.get(evt.target.value),
     });
   };
 
