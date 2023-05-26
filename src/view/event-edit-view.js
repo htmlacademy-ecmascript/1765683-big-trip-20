@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { mapWaypoints } from '../mock/mock.js';
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -55,7 +56,7 @@ function createEventEditTemplate(data) {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type}">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
             <div class="event__type-list">
@@ -69,11 +70,11 @@ function createEventEditTemplate(data) {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination.name} list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="${destination}"></option>
-              <option value="${destination}"></option>
-              <option value="${destination}"></option>
+              <option value="${destination.name}"></option>
+              <option value="${destination.name}"></option>
+              <option value="${destination.name}"></option>
             </datalist>
           </div>
           <div class="event__field-group  event__field-group--time">
@@ -113,17 +114,14 @@ function createEventEditTemplate(data) {
 }
 
 export default class EventEditView extends AbstractStatefulView {
-
   #datePickerFrom = null;
   #datePickerTo = null;
-  #waypoint = null;
   #handleSubmit = null;
   #handleCancel = null;
 
   constructor({ waypoint, onFormSubmit, onFormCancel }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
-    this.#waypoint = waypoint;
     this.#handleSubmit = onFormSubmit;
     this.#handleCancel = onFormCancel;
 
@@ -131,7 +129,7 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventEditTemplate(EventEditView.parseStateToWaypoint(this._state));
+    return createEventEditTemplate(this._state);
   }
 
   removeElement() {
@@ -148,6 +146,10 @@ export default class EventEditView extends AbstractStatefulView {
     }
   }
 
+  reset(waypoint) {
+    this.updateElement(EventEditView.parseWaypointToState(waypoint));
+  }
+
   _restoreHandlers() {
     this.element
       .querySelector('.event__save-btn')
@@ -158,13 +160,19 @@ export default class EventEditView extends AbstractStatefulView {
     this.element
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#formCancelHandler);
+    this.element
+      .querySelector('.event__type-group')
+      .addEventListener('click', this.#eventTypeChangeHandler);
+    this.element
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this.#formDestChangeHandler);
 
     this.#setDatePicker();
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleSubmit(this.#waypoint);
+    this.#handleSubmit(this._state);
   };
 
   #formCancelHandler = (evt) => {
@@ -172,15 +180,30 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleCancel();
   };
 
-  #userFromDateChangeHandler = ([ userDateFrom ]) => {
+  #eventTypeChangeHandler = (evt) => {
+    if (evt.target.tagName === 'INPUT') {
+      this.updateElement({
+        type: evt.target.value,
+      });
+    }
+  };
+
+  #formDestChangeHandler = (evt) => {
+    mapWaypoints.get(evt.target.value);
     this.updateElement({
-      dateFrom: userDateFrom
+      destination: mapWaypoints.get(evt.target.value)
     });
   };
 
-  #userToDateChangeHandler = ([ userDateTo ]) => {
+  #userFromDateChangeHandler = ([userDateFrom]) => {
     this.updateElement({
-      dateTo: userDateTo
+      dateFrom: userDateFrom,
+    });
+  };
+
+  #userToDateChangeHandler = ([userDateTo]) => {
+    this.updateElement({
+      dateTo: userDateTo,
     });
   };
 
@@ -194,7 +217,7 @@ export default class EventEditView extends AbstractStatefulView {
           time_24hr: true, // flatpickr property
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
-          onChange: this.#userFromDateChangeHandler
+          onChange: this.#userFromDateChangeHandler,
         }
       );
     }
@@ -214,8 +237,8 @@ export default class EventEditView extends AbstractStatefulView {
     }
   }
 
-  static parseWaypointToState(state) {
-    return { ...state };
+  static parseWaypointToState(waypoint) {
+    return { ...waypoint };
   }
 
   static parseStateToWaypoint(state) {

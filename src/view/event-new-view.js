@@ -1,6 +1,9 @@
-import AbstractView from '../framework/view/abstract-view.js';
+// eslint-disable-next-line quotes
+import AbstractStatefulView from "../framework/view/abstract-stateful-view";
 
 function createEventNewTemplate() {
+
+  /*html*/ 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
@@ -144,7 +147,7 @@ function createEventNewTemplate() {
     </li>`;
 }
 
-export default class EventNewView extends AbstractView {
+export default class EventNewView extends AbstractStatefulView {
   get template() {
     return createEventNewTemplate();
   }

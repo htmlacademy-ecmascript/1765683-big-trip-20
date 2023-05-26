@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDate, getDuration } from '../mock/util.js';
 
 function createEventTemplate(data) {
@@ -48,24 +48,18 @@ function createEventTemplate(data) {
       </li>`;
 }
 
-export default class EventView extends AbstractView {
-  #waypoint = null;
+export default class EventView extends AbstractStatefulView {
+
   #onEditClick = null;
   #onFavoriteClick = null;
 
   constructor({ waypoint, onEditClick, onFavoriteClick }) {
     super();
-    this.#waypoint = waypoint;
+    this._setState(waypoint);
     this.#onEditClick = onEditClick;
     this.#onFavoriteClick = onFavoriteClick;
 
-    this.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#onEvtClick);
-
-    this.element
-      .querySelector('.event__favorite-icon')
-      .addEventListener('click', this.#favoriteClickHandler);
+    this._restoreHandlers();
   }
 
   #onEvtClick = (evt) => {
@@ -79,6 +73,16 @@ export default class EventView extends AbstractView {
   };
 
   get template() {
-    return createEventTemplate(this.#waypoint);
+    return createEventTemplate(this._state);
+  }
+
+  _restoreHandlers() {
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#onEvtClick);
+
+    this.element
+      .querySelector('.event__favorite-icon')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 }

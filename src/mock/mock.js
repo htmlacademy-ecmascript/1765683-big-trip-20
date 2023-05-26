@@ -2,7 +2,7 @@ import { WAYPOINT_OPTIONS, TRAVEL_WAYPOINTS, TOTAL_PRICE, OFFERS, OFFERS_PRICE, 
 import { getRandomNumber, getRandomArrayElement } from './util.js';
 import { nanoid } from 'nanoid';
 
-const mapWaypoints = new Map();
+export const mapWaypoints = new Map();
 const mapOptions = new Map();
 
 TRAVEL_WAYPOINTS.forEach((elem) => {

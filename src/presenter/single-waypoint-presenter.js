@@ -61,6 +61,7 @@ export default class SingleWaypointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#waypoint);
       this.#replaceEditToInfo();
     }
   }
