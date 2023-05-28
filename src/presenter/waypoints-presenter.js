@@ -3,7 +3,7 @@ import EventListView from '../view/event-list-view.js';
 import EventNewView from '../view/event-new-view.js';
 import EmptyListMessage from '../view/event-list-empty-view.js';
 import SingleWaypointPresenter from './single-waypoint-presenter.js';
-import { updateItem, sortPointByPrice, sortPointByTime } from '../mock/util.js';
+import { updateItem, sortPointByPrice, sortPointByTime, getRandomArrayElement } from '../mock/util.js';
 import SortView from '../view/sort-view.js';
 import { SORT_TYPE } from '../mock/const.js';
 
@@ -13,7 +13,7 @@ export default class WaypointPresenter {
   #waypoints = [];
   #sourcedWaypoints = [];
   #eventListComponent = new EventListView();
-  #newEventComponent = new EventNewView();
+  #newEventComponent = null;
   #waypointPresenters = new Map();
   #sortComponent = null;
   #currentSortType = SORT_TYPE.default;
@@ -71,7 +71,8 @@ export default class WaypointPresenter {
   }
 
   #renderNewEventComponent() {
-    render(this.#newEventComponent, this.#eventListComponent.element);
+    this.newEventComponent = new EventNewView({waypoints: getRandomArrayElement(this.#waypoints)});
+    render(this.newEventComponent, this.#eventListComponent.element);
   }
 
   #renderWaypoints(waypoint) {
