@@ -1,47 +1,41 @@
-import { WAYPOINT_OPTIONS, TRAVEL_WAYPOINTS, TOTAL_PRICE, OFFERS, OFFERS_PRICE, DATE_FROM, DATE_TO } from './const.js';
+import {
+  TRAVEL_WAYPOINTS,
+  OFFERS,
+  DATE_FROM,
+  DATE_TO,
+  WAYPOINT_TYPES,
+} from './const.js';
 import { getRandomNumber, getRandomArrayElement } from './util.js';
 import { nanoid } from 'nanoid';
 
-export const mapWaypoints = new Map();
-const mapOptions = new Map();
-
-TRAVEL_WAYPOINTS.forEach((elem) => {
-  mapWaypoints.set(elem, {
-    'id': nanoid(),
-    'description': `some description template of  ${elem}`,
-    'name': elem,
-    'pictures': Array.from({ length: getRandomNumber() }, () => ({
-      src: `https://loremflickr.com/248/152?random=${getRandomNumber()}`,
-      description: `${elem} parliament building`,
-    })),
-  });
+const createDestination = (name) => ({
+  id: nanoid(),
+  description:
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',
+  name,
+  pictures: Array.from({ length: Math.floor(Math.random() * 3) }, () => ({
+    src: `https://loremflickr.com/248/152?random=${getRandomNumber()}`,
+    destination: 'Lorem ipsum dolor sit amet',
+  })),
 });
 
-WAYPOINT_OPTIONS.forEach((elem) => {
-  mapOptions.set(elem,
-    [
-      {
-        'id': nanoid(),
-        'title': getRandomArrayElement(OFFERS),
-        'price': getRandomArrayElement(OFFERS_PRICE)
-      }
-    ],
+export const DESTINATIONS = TRAVEL_WAYPOINTS.map(createDestination);
 
-  );
-
+const createOffer = () => ({
+  id: nanoid(),
+  title: getRandomArrayElement(OFFERS),
+  price: Math.floor(Math.random() * 100),
 });
 
-export const getRandomData = () => {
-  const type = getRandomArrayElement(WAYPOINT_OPTIONS);
-  return {
-    'id': nanoid(),
-    'basePrice': getRandomArrayElement(TOTAL_PRICE),
-    'dateFrom': getRandomArrayElement(DATE_FROM),
-    'dateTo': getRandomArrayElement(DATE_TO),
-    'destination': mapWaypoints.get(getRandomArrayElement(TRAVEL_WAYPOINTS)),
-    'isFavorite': [true,false][Math.floor(Math.random() * 2)],
-    'offers': mapOptions.get(type),
-    'type': type,
-  };
-
-};
+export const getRandomData = () => ({
+  id: nanoid(),
+  basePrice: Math.floor(Math.random() * 1000),
+  dateFrom: getRandomArrayElement(DATE_FROM),
+  dateTo: getRandomArrayElement(DATE_TO),
+  destination: getRandomArrayElement(DESTINATIONS),
+  isFavorite: Math.random() * 2 > 1,
+  offers: Array.from({ length: Math.floor(Math.random() * 3) })
+    .fill('')
+    .map(createOffer),
+  type: getRandomArrayElement(WAYPOINT_TYPES),
+});

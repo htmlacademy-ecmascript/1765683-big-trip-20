@@ -1,6 +1,7 @@
 import { render } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
+import EventNewView from '../view/event-new-view.js';
 import { replace, remove } from '../framework/render.js';
 import { Mode } from '../mock/const.js';
 
@@ -12,6 +13,7 @@ export default class SingleWaypointPresenter {
   #handleDataChange = null;
   #mode = Mode.DEFAULT;
   #handleModeChange = null;
+  #eventNewComponent = null;
 
   constructor({ eventListComponent, onDataChange, onModeChange }) {
     this.#eventListComponent = eventListComponent;
@@ -36,6 +38,7 @@ export default class SingleWaypointPresenter {
       onFormSubmit: this.#replaceInfoHandler,
       onFormCancel: this.#replaceInfoHandler,
     });
+
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this.#eventViewComponent, this.#eventListComponent);
