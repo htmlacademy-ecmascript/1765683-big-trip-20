@@ -1,22 +1,22 @@
 import { render } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
-import EventNewView from '../view/event-new-view.js';
 import { replace, remove } from '../framework/render.js';
 import { Mode } from '../mock/const.js';
 
 export default class SingleWaypointPresenter {
-  #waypoint = null;
-  #eventViewComponent = null;
-  #eventListComponent = null;
-  #eventEditComponent = null;
+  #eventListContainer = null;
   #handleDataChange = null;
-  #mode = Mode.DEFAULT;
   #handleModeChange = null;
-  #eventNewComponent = null;
+
+  #eventComponent = null;
+  #eventEditComponent = null;
+
+  #waypoint = null;
+  #mode = Mode.DEFAULT;
 
   constructor({ eventListComponent, onDataChange, onModeChange }) {
-    this.#eventListComponent = eventListComponent;
+    this.#eventListContainer = eventListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
@@ -24,29 +24,29 @@ export default class SingleWaypointPresenter {
   init(waypoint) {
     this.#waypoint = waypoint;
 
-    const prevEventComponent = this.#eventViewComponent;
+    const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
-    this.#eventViewComponent = new EventView({
+    this.#eventComponent = new EventView({
       waypoint: this.#waypoint,
-      onEditClick: this.#replaceEditHandler,
+      onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#eventEditComponent = new EventEditView({
       waypoint: this.#waypoint,
-      onFormSubmit: this.#replaceInfoHandler,
-      onFormCancel: this.#replaceInfoHandler,
+      onFormSubmit: this.#handleFormSubmit,
+      onDelete: this.#handleFormCancel,
     });
 
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
-      render(this.#eventViewComponent, this.#eventListComponent);
+      render(this.#eventComponent, this.#eventListContainer);
       return;
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      replace(this.#eventViewComponent, prevEventComponent);
+      replace(this.#eventComponent, prevEventComponent);
     }
 
     if (this.#mode === Mode.EDITING) {
@@ -58,7 +58,7 @@ export default class SingleWaypointPresenter {
   }
 
   destroy() {
-    remove(this.#eventViewComponent);
+    remove(this.#eventComponent);
     remove(this.#eventEditComponent);
   }
 
@@ -70,14 +70,14 @@ export default class SingleWaypointPresenter {
   }
 
   #replaceInfoToEdit() {
-    replace(this.#eventEditComponent, this.#eventViewComponent);
+    replace(this.#eventEditComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeydownHandler);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
   }
 
   #replaceEditToInfo() {
-    replace(this.#eventViewComponent, this.#eventEditComponent);
+    replace(this.#eventComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#escKeydownHandler);
     this.#mode = Mode.DEFAULT;
   }
@@ -91,6 +91,10 @@ export default class SingleWaypointPresenter {
     }
   };
 
+  #handleEditClick = () => {
+    this.#replaceInfoToEdit();
+  }
+
   #handleFavoriteClick = () => {
     this.#handleDataChange({
       ...this.#waypoint,
@@ -98,11 +102,12 @@ export default class SingleWaypointPresenter {
     });
   };
 
-  #replaceEditHandler = () => {
-    this.#replaceInfoToEdit();
-  };
-
-  #replaceInfoHandler = () => {
+  #handleFormSubmit = (waypoint) => {
+    this.#handleDataChange(waypoint);
     this.#replaceEditToInfo();
   };
+
+  #handleFormCancel = () => {
+    this.#replaceEditToInfo();
+  }
 }

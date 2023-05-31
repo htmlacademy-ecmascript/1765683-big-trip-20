@@ -117,13 +117,13 @@ export default class EventEditView extends AbstractStatefulView {
   #datePickerFrom = null;
   #datePickerTo = null;
   #handleSubmit = null;
-  #handleCancel = null;
+  #handleDelete = null;
 
-  constructor({ waypoint, onFormSubmit, onFormCancel }) {
+  constructor({ waypoint, onFormSubmit, onDelete }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#handleSubmit = onFormSubmit;
-    this.#handleCancel = onFormCancel;
+    this.#handleDelete = onDelete;
 
     this._restoreHandlers();
   }
@@ -180,7 +180,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #formCancelHandler = (evt) => {
     evt.preventDefault();
-    this.#handleCancel();
+    this.#handleDelete();
   };
 
   #eventTypeChangeHandler = (evt) => {
