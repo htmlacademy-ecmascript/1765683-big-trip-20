@@ -112,7 +112,7 @@ export default class WaypointPresenter {
       return;
     }
 
-    this.#renderSort()
+    this.#renderSort();
     this.#renderWaypointsList();
   }
 }

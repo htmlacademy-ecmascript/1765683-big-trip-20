@@ -93,7 +93,7 @@ export default class SingleWaypointPresenter {
 
   #handleEditClick = () => {
     this.#replaceInfoToEdit();
-  }
+  };
 
   #handleFavoriteClick = () => {
     this.#handleDataChange({
@@ -109,5 +109,5 @@ export default class SingleWaypointPresenter {
 
   #handleFormCancel = () => {
     this.#replaceEditToInfo();
-  }
+  };
 }
