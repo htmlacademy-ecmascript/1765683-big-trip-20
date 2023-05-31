@@ -65,7 +65,7 @@ export default class WaypointPresenter {
     }
     this.#sortWaypoints(sortType);
     this.#clearWaypointsList();
-    this.#re;
+    this.#renderWaypointsList();
   };
 
 
@@ -76,8 +76,6 @@ export default class WaypointPresenter {
 
     render(this.#sortComponent, this.#waypointsContainer);
   }
-
-
 
   #renderWaypoint(waypoint) {
     const singleWaypointPresenter = new SingleWaypointPresenter({

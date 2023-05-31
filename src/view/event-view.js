@@ -16,8 +16,7 @@ function createEventOfferTemplate(offer) {
 }
 
 function createEventTemplate(data) {
-  const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } =
-    data;
+  const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = data;
 
   const isFavoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
@@ -32,7 +31,7 @@ function createEventTemplate(data) {
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFrom}">${humanizeTimeFromDate(dateFrom)}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">${humanizeTimeFromDate(dateTo)}</time>
+            <time class="event__end-time" datetime="${dateTo}">${humanizeTimeFromDate(dateTo)}</time>
           </p>
           <p class="event__duration">${humanizeDurationFromDates(dateFrom, dateTo)}</p>
         </div>

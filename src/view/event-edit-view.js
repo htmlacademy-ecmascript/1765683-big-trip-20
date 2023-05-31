@@ -1,9 +1,72 @@
-import { WAYPOINT_OPTIONS } from '../mock/const.js';
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { mapWaypoints } from '../mock/mock.js';
+import { DESTINATIONS } from '../mock/mock.js';
+import { TRAVEL_WAYPOINTS, WAYPOINT_TYPES } from '../mock/const.js';
+
+function createEventOffersSelectionTemplate(offers) {
+  if (!offers.length) {
+    return '';
+  }
+
+  const createOfferItemTemplate = (offer) => {
+    const { id, title, price, isChecked } = offer;
+
+    return `
+    <div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id} ${isChecked ? 'checked' : ''}">
+        <label class="event__offer-label" for="event-offer-${id}">
+          <span class="event__offer-title">${title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        </label>
+     </div>
+     `;
+  };
+
+  return `
+  <section class="event__section event__section--offers">
+    <h3 class="event__section-title event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${offers.map(createOfferItemTemplate).join('')}
+    </div>
+  </section>
+  `;
+}
+
+function createEventDestinationSelectionTemplate(destination) {
+  if (!destination) {
+    return '';
+  }
+
+  const { description, pictures } = destination;
+
+  const createPicturesTemplate = (photos) => {
+    if(!photos.length) {
+      return '';
+    }
+
+    return `
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+       ${photos.map((photo) => `
+          <img class="event__photo" src="${photo.src}" alt="${photo.description}">
+       `).join('')}
+      </div>
+    </div>
+    `;
+
+  };
+
+  return `
+  <section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${description}</p>
+    ${createPicturesTemplate(pictures)}
+  </section>
+  `;
+}
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -11,44 +74,17 @@ function createEventEditTemplate(data) {
   const timeFrom = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(dateTo).format('DD/MM/YY HH:mm');
 
-  const createOffersByType = () => {
-    let callOffers = '';
-    if (offers.length) {
-      callOffers = '';
-      offers.forEach((offer) => {
-        const checked = Math.random() > 0.5 ? 'checked' : '';
-        if (offer.title && offer.price && offer.id) {
-          callOffers += `
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
-            <label class="event__offer-label" for="event-offer-${offer.id}">
-              <span class="event__offer-title">${offer.title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
-            </label>
-          </div>`;
-        }
-      });
-    }
-    return callOffers;
-  };
+  const createSelectTypesTemplate = (selectedType) => WAYPOINT_TYPES.map((waypointType) => {
+    const checkedAttribute = waypointType === selectedType ? 'checked' : '';
+    const lowerType = waypointType.toLowerCase();
 
-  const createSelectType = () => {
-    let selectType = '';
-    if (WAYPOINT_OPTIONS.length) {
-      WAYPOINT_OPTIONS.forEach((typeEvent) => {
-        const checked = typeEvent === type ? 'checked' : '';
-        if (typeEvent) {
-          selectType += `
-          <div class="event__type-item">
-            <input id="event-type-${typeEvent.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeEvent.toLowerCase()}" ${checked}>
-            <label class="event__type-label  event__type-label--${typeEvent.toLowerCase()}" for="event-type-${typeEvent.toLowerCase()}-1">${typeEvent}</label>
-          </div>`;
-        }
-      });
-    }
-    return selectType;
-  };
+    return `
+    <div class="event__type-item">
+     <input id="event-type-${lowerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowerType}" ${checkedAttribute}>
+     <label class="event__type-label  event__type-label--${lowerType}" for="event-type-${lowerType}-1">${waypointType}</label>
+    </div>
+    `;
+  }).join('');
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -56,13 +92,13 @@ function createEventEditTemplate(data) {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type}">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createSelectType()}
+                ${createSelectTypesTemplate(type)}
               </fieldset>
             </div>
           </div>
@@ -72,9 +108,9 @@ function createEventEditTemplate(data) {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination.name} list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="${destination.name}"></option>
-              <option value="${destination.name}"></option>
-              <option value="${destination.name}"></option>
+            ${TRAVEL_WAYPOINTS.map((point) => ` 
+                  <option value="${point}"></option>
+               `).join('')}
             </datalist>
           </div>
           <div class="event__field-group  event__field-group--time">
@@ -98,20 +134,22 @@ function createEventEditTemplate(data) {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-            <div class="event__available-offers">
-              ${createOffersByType()}
-            </div>
-          </section>
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination.description}</p>
-          </section>
+          ${createEventOffersSelectionTemplate(offers)}
+          ${createEventDestinationSelectionTemplate(destination)}
         </section>
       </form>
     </li>`;
 }
+
+const BLANK_EVENT = {};
+
+const DEFAULT_FLATPICKR_OPTIONS = {
+  enableTime: true,
+  altInput: true,
+  altFormat: 'd/m/y H:i',
+  // eslint-disable-next-line camelcase
+  time_24hr: true, // flatpickr option
+};
 
 export default class EventEditView extends AbstractStatefulView {
   #datePickerFrom = null;
@@ -119,7 +157,7 @@ export default class EventEditView extends AbstractStatefulView {
   #handleSubmit = null;
   #handleDelete = null;
 
-  constructor({ waypoint, onFormSubmit, onDelete }) {
+  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#handleSubmit = onFormSubmit;
@@ -152,7 +190,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element
-      .querySelector('.event__save-btn')
+      .querySelector('form.event')
       .addEventListener('submit', this.#formSubmitHandler);
     this.element
       .querySelector('.event__reset-btn')
@@ -164,13 +202,13 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__type-group')
       .addEventListener('click', this.#eventTypeChangeHandler);
     this.element
-      .querySelector('.event__input--destination')
-      .addEventListener('change', this.#formDestChangeHandler);
+      .querySelector('#event-price-1')
+      .addEventListener('change', this.#destinationChangeHandler);
     this.element
-      .querySelector('.event__input--price')
+      .querySelector('.#event-destination-1')
       .addEventListener('input', this.#priceChangeHandler);
 
-    this.#setDatePicker();
+    this.#setDatePickers();
   }
 
   #formSubmitHandler = (evt) => {
@@ -191,18 +229,18 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  #priceChangeHandler = (evt) => {
-    evt.preventDefault();
-    this._setState({
-      basePrice: evt.target.value,
-    });
+  #destinationChangeHandler = (evt) => {
+    const destination = DESTINATIONS.find(
+      ({ name }) => name === evt.target.value
+    );
+
+    this.updateElement({ destination });
   };
 
-  #formDestChangeHandler = (evt) => {
-    mapWaypoints.get(evt.target.value);
-    this.updateElement({
-      destination: mapWaypoints.get(evt.target.value),
-    });
+  #priceChangeHandler = (evt) => {
+    const basePrice = Number(evt.target.value);
+
+    this.updateElement({ basePrice });
   };
 
   #userFromDateChangeHandler = ([userDateFrom]) => {
@@ -217,15 +255,12 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #setDatePicker() {
+  #setDatePickers() {
     if (this._state.dateFrom) {
       this.#datePickerFrom = flatpickr(
         this.element.querySelector('input[name="event-start-time"]'),
         {
-          enableTime: true,
-          // eslint-disable-next-line camelcase
-          time_24hr: true, // flatpickr property
-          dateFormat: 'd/m/y H:i',
+          ...DEFAULT_FLATPICKR_OPTIONS,
           defaultDate: this._state.dateFrom,
           onChange: this.#userFromDateChangeHandler,
         }
@@ -236,10 +271,7 @@ export default class EventEditView extends AbstractStatefulView {
       this.#datePickerTo = flatpickr(
         this.element.querySelector('#event-end-time-1'),
         {
-          enableTime: true,
-          // eslint-disable-next-line camelcase
-          time_24hr: true, // flatpickr property
-          dateFormat: 'd/m/y H:i',
+          ...DEFAULT_FLATPICKR_OPTIONS,
           defaultDate: this._state.dateTo,
           onChange: this.#userToDateChangeHandler,
         }
