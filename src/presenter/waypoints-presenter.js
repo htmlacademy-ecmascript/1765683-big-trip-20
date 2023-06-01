@@ -6,7 +6,7 @@ import { updateItem, sortPointByPrice, sortPointByTime } from '../mock/waypoints
 import SortView from '../view/sort-view.js';
 import { SortType } from '../mock/const.js';
 
-export default class WaypointPresenter {
+export default class WaypointsPresenter {
   #waypointsContainer = null;
   #waypointsModel = null;
 

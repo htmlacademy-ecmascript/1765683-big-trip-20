@@ -63,7 +63,7 @@ export default class EventView extends AbstractView {
 
   constructor({ waypoint, onEditClick, onFavoriteClick }) {
     super();
-    this.waypoint = waypoint;
+    this.#waypoint = waypoint;
     this.#onEditClick = onEditClick;
     this.#onFavoriteClick = onFavoriteClick;
 
