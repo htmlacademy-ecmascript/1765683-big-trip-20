@@ -39,6 +39,13 @@ export const SortType = {
   PRICE: 'price',
 };
 
+export const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
 
 export const DATE_FROM = [
   '2019-07-10T22:55:56.845Z',
