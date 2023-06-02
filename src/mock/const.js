@@ -1,4 +1,4 @@
-const TRAVEL_WAYPOINTS = [
+export const TRAVEL_WAYPOINTS = [
   'Amsterdam',
   'Chamonix',
   'Geneva',
@@ -7,7 +7,7 @@ const TRAVEL_WAYPOINTS = [
   'Tokyo',
 ];
 
-const WAYPOINT_OPTIONS = [
+export const WAYPOINT_TYPES = [
   'Taxi',
   'Bus',
   'Train',
@@ -19,7 +19,7 @@ const WAYPOINT_OPTIONS = [
   'Restaurant',
 ];
 
-const OFFERS = [
+export const OFFERS = [
   'Upgrade to a business class',
   'Add luggage',
   'Switch to comfort',
@@ -28,48 +28,36 @@ const OFFERS = [
   'Add breakfast',
 ];
 
-const OFFERS_PRICE = [20, 50, 140, 200, 600];
-
-const TOTAL_PRICE = [20, 160, 600, 830];
-
-const Mode = {
+export const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
 
-const SORT_TYPE = {
-  default: 'day',
-  event: 'event',
-  time: 'time',
-  price: 'price',
-  offers: 'offers',
+export const SortType = {
+  DEFAULT: 'day',
+  TIME: 'time',
+  PRICE: 'price',
 };
 
-const LABEL = 'LABEL';
+export const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
 
-const DATE_FROM = [
-  '2019-07-10T22:55:56.845Z',
+
+export const DATE_FROM = [
+  '2019-06-10T22:55:56.845Z',
   '2019-07-10T21:30:56.845Z',
   '2019-07-10T19:15:56.845Z',
   '2019-07-10T12:10:31.845Z',
 ];
 
-const DATE_TO = [
+export const DATE_TO = [
   '2019-07-11T12:10:13.375Z',
   '2019-07-11T13:05:07.375Z',
   '2019-07-11T10:33:13.375Z',
   '2019-07-11T14:44:22.375Z',
 ];
 
-export {
-  TRAVEL_WAYPOINTS,
-  WAYPOINT_OPTIONS,
-  TOTAL_PRICE,
-  OFFERS,
-  OFFERS_PRICE,
-  Mode,
-  SORT_TYPE,
-  LABEL,
-  DATE_FROM,
-  DATE_TO,
-};
