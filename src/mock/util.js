@@ -1,32 +1,37 @@
 import dayjs from 'dayjs';
-const DATE_FORMAT = 'HH:mm';
 
-function humanizeDate(dueDate) {
-  return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
+export function humanizeCalendarDateFromDate(date) {
+  return date ? dayjs(date).format('MMM DD').toUpperCase() : '';
 }
 
-function getRandomNumber() {
-  Math.floor(Math.random() * 20);
+export function humanizeDateFromDate(date) {
+  return date ? dayjs(date).format('YYYY-MM-DD').toUpperCase() : '';
 }
 
-function getRandomArrayElement(items) {
+export function humanizeTimeFromDate(date) {
+  return date ? dayjs(date).format('HH:mm') : '';
+}
+
+export function humanizeDurationFromDates(from, to) {
+  if (!from || !to) {
+    return '';
+  }
+
+  const minutes = dayjs(to).diff(dayjs(from), 'minute');
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  return ` ${days > 0 ? `${days}D` : ''} ${hours > 0 ? `${hours}H` : ''} ${minutes - (hours * 60)}M`;
+}
+
+export function getRandomNumber() {
+  return Math.floor(Math.random() * 20);
+}
+
+export function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
-
-function durationPoint(point) {
+export function durationPoint(point) {
   return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
 }
-
-function sortPointByTime(points) {
-  return points.sort((a, b) => durationPoint(b) - durationPoint(a));
-}
-
-function sortPointByPrice(points) {
-  return points.sort((a, b) => b.basePrice - a.basePrice);
-}
-
-export { getRandomNumber, getRandomArrayElement, humanizeDate, updateItem, sortPointByPrice, sortPointByTime };
