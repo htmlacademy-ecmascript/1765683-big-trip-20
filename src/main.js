@@ -1,4 +1,3 @@
-
 import WaypointsPresenter from './presenter/waypoints-presenter.js';
 import WaypointsModel from './model/waypoints-model.js';
 import { generateFilter } from './mock/filter.js';
