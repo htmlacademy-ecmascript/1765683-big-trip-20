@@ -2,7 +2,7 @@ import { render } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
 import { replace, remove } from '../framework/render.js';
-import { Mode } from '../mock/const.js';
+import { Mode, UpdateType, UserAction } from '../mock/const.js';
 
 export default class SingleWaypointPresenter {
   #eventListContainer = null;
@@ -96,14 +96,18 @@ export default class SingleWaypointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({
-      ...this.#waypoint,
-      isFavorite: !this.#waypoint.isFavorite,
-    });
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#waypoint,isFavorite: !this.#waypoint.isFavorite});
   };
 
   #handleFormSubmit = (waypoint) => {
-    this.#handleDataChange(waypoint);
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      waypoint,
+    );
     this.#replaceEditToInfo();
   };
 

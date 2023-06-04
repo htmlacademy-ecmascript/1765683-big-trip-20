@@ -21,7 +21,7 @@ export function humanizeDurationFromDates(from, to) {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  return ` ${days > 0 ? `${days}D` : ''} ${hours > 0 ? `${hours}H` : ''} ${minutes - (hours * 60)}M`;
+  return ` ${days > 0 ? `${days}D` : ''} ${hours > 0 ? hours - (days * 24) : ''}H ${minutes - (hours * 60)}M`;
 }
 
 export function getRandomNumber() {

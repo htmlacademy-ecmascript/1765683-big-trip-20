@@ -46,6 +46,18 @@ export const FilterType = {
   PAST: 'past',
 };
 
+export const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 export const DATE_FROM = [
   '2019-06-10T22:55:56.845Z',
   '2019-07-10T21:30:56.845Z',
