@@ -71,7 +71,6 @@ export default class WaypointsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#waypointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
