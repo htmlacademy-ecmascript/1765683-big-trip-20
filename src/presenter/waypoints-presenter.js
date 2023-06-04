@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { remove, render } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import EmptyListMessage from '../view/event-list-empty-view.js';
 import SingleWaypointPresenter from './single-waypoint-presenter.js';
@@ -14,6 +14,7 @@ export default class WaypointsPresenter {
   #eventListComponent = new EventListView();
   #waypointPresenters = new Map();
   #sortComponent = null;
+  #NoWaypointComponent = null;
   #currentSortType = SortType.DEFAULT;
 
   constructor({ waypointsContainer, waypointsModel }) {
@@ -27,11 +28,11 @@ export default class WaypointsPresenter {
 
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#waypointsModel.waypoints].sort(sortPointByTime);
+        return this.#waypointsModel.waypoints.sort(sortPointByTime);
       case SortType.PRICE:
-        return [...this.#waypointsModel.waypoints].sort(sortPointByPrice);
+        return this.#waypointsModel.waypoints.sort(sortPointByPrice);
       default:
-        return this.#waypointsModel.waypoints;
+        return [...this.#waypointsModel.waypoints];
     }
   }
 
@@ -66,10 +67,12 @@ export default class WaypointsPresenter {
         this.#waypointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
+        this.#clearPage();
+        this.#renderPage();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        this.#clearPage({resetSortType: true});
+        this.#renderPage();
         break;
     }
   };
@@ -80,13 +83,14 @@ export default class WaypointsPresenter {
       return;
     }
     this.#currentSortType = sortType;
-    this.#clearWaypointsList();
+    this.#clearPage();
     this.#renderWaypointsList();
   };
 
 
   #renderSort() {
     this.#sortComponent = new SortView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
@@ -108,12 +112,20 @@ export default class WaypointsPresenter {
   }
 
   #renderNoWaypoints() {
-    render(new EmptyListMessage(), this.#eventListComponent.element);
+    this.#NoWaypointComponent = new EmptyListMessage();
+    render(this.#NoWaypointComponent, this.#eventListComponent.element);
   }
 
-  #clearWaypointsList() {
+  #clearPage({resetSortType = false} = {}) {
     this.#waypointPresenters.forEach((presenter) => presenter.destroy());
     this.#waypointPresenters.clear();
+
+    remove(this.#sortComponent);
+    remove(this.#NoWaypointComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
   }
 
   #renderWaypointsList() {
