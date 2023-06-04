@@ -36,7 +36,8 @@ export default class SingleWaypointPresenter {
     this.#eventEditComponent = new EventEditView({
       waypoint: this.#waypoint,
       onFormSubmit: this.#handleFormSubmit,
-      onDelete: this.#handleFormCancel,
+      onCancel: this.#handleFormCancel,
+      onDelete: this.#handleDeleteClick,
     });
 
 
@@ -109,6 +110,14 @@ export default class SingleWaypointPresenter {
       waypoint,
     );
     this.#replaceEditToInfo();
+  };
+
+  #handleDeleteClick = (waypoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint
+    );
   };
 
   #handleFormCancel = () => {

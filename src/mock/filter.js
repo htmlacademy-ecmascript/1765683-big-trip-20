@@ -6,7 +6,7 @@ import { FilterType } from './const.js';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
-const filter = {
+export const filter = {
 
   [FilterType.EVERYTHING]: (waypoints) => waypoints,
   [FilterType.FUTURE]: (waypoints) => waypoints.filter((waypoint) => dayjs().isBefore(dayjs(waypoint.dateFrom))),
@@ -18,7 +18,7 @@ const filter = {
   [FilterType.PAST]: (waypoints) => waypoints.filter((waypoint) => dayjs(waypoint.dateTo).isBefore(dayjs())),
 };
 
-function generateFilter(waypoints) {
+export function generateFilter(waypoints) {
   return Object.entries(filter).map(
     ([filterType, filterWaypoints]) => ({
       type: filterType,
@@ -27,4 +27,4 @@ function generateFilter(waypoints) {
   );
 }
 
-export { generateFilter };
+

@@ -4,35 +4,43 @@ import EmptyListMessage from '../view/event-list-empty-view.js';
 import SingleWaypointPresenter from './single-waypoint-presenter.js';
 import { sortPointByPrice, sortPointByTime } from '../mock/waypoints.js';
 import SortView from '../view/sort-view.js';
-import { SortType, UpdateType, UserAction } from '../mock/const.js';
-
+import { SortType, UpdateType, UserAction, FilterType } from '../mock/const.js';
+import { filter } from '../mock/filter.js';
 
 export default class WaypointsPresenter {
   #waypointsContainer = null;
   #waypointsModel = null;
+  #filterModel = null;
 
   #eventListComponent = new EventListView();
   #waypointPresenters = new Map();
   #sortComponent = null;
   #NoWaypointComponent = null;
   #currentSortType = SortType.DEFAULT;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({ waypointsContainer, waypointsModel }) {
+  constructor({ waypointsContainer, waypointsModel, filterModel }) {
     this.#waypointsContainer = waypointsContainer;
     this.#waypointsModel = waypointsModel;
+    this.#filterModel = filterModel;
 
     this.#waypointsModel.addObservable(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get waypoints() {
 
+    this.#filterType = this.#filterModel.filter;
+    const waypoints = this.#waypointsModel.waypoints;
+    const filteredWaypoints = filter[this.#filterType](waypoints);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return this.#waypointsModel.waypoints.sort(sortPointByTime);
+        return filteredWaypoints.sort(sortPointByTime);
       case SortType.PRICE:
-        return this.#waypointsModel.waypoints.sort(sortPointByPrice);
+        return filteredWaypoints.sort(sortPointByPrice);
       default:
-        return [...this.#waypointsModel.waypoints];
+        return filteredWaypoints;
     }
   }
 
@@ -112,7 +120,7 @@ export default class WaypointsPresenter {
   }
 
   #renderNoWaypoints() {
-    this.#NoWaypointComponent = new EmptyListMessage();
+    this.#NoWaypointComponent = new EmptyListMessage({filterType: this.#filterType});
     render(this.#NoWaypointComponent, this.#eventListComponent.element);
   }
 
@@ -121,7 +129,10 @@ export default class WaypointsPresenter {
     this.#waypointPresenters.clear();
 
     remove(this.#sortComponent);
-    remove(this.#NoWaypointComponent);
+
+    if(this.#NoWaypointComponent) {
+      remove(this.#NoWaypointComponent);
+    }
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
