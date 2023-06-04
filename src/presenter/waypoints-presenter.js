@@ -24,7 +24,7 @@ export default class WaypointsPresenter {
     this.#waypointsModel = waypointsModel;
     this.#filterModel = filterModel;
 
-    this.#waypointsModel.addObservable(this.#handleModelEvent);
+    this.#waypointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
@@ -141,7 +141,7 @@ export default class WaypointsPresenter {
   #renderWaypointsList() {
     render(this.#eventListComponent, this.#waypointsContainer);
 
-    this.#renderWaypoints();
+    this.#renderWaypoints(this.waypoints);
   }
 
   #renderPage() {
