@@ -40,7 +40,7 @@ export default class WaypointsPresenter {
       case SortType.PRICE:
         return filteredWaypoints.sort(sortPointByPrice);
       default:
-        return filteredWaypoints;
+        return filteredWaypoints
     }
   }
 
@@ -91,7 +91,7 @@ export default class WaypointsPresenter {
     }
     this.#currentSortType = sortType;
     this.#clearPage();
-    this.#renderWaypointsList();
+    this.#renderPage();
   };
 
 
