@@ -11,7 +11,7 @@ export default class WaypointsModel extends Observable {
     return this.#waypoints;
   }
 
-  updateTask(updateType, update) {
+  updateWaypoint(updateType, update) {
     const index = this.#waypoints.findIndex((waypoint) => waypoint.id === update.id);
 
     if (index === -1) {

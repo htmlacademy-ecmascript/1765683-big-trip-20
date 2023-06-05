@@ -39,9 +39,8 @@ export default class WaypointsPresenter {
         return filteredWaypoints.sort(sortPointByTime);
       case SortType.PRICE:
         return filteredWaypoints.sort(sortPointByPrice);
-      default:
-        return filteredWaypoints
     }
+    return filteredWaypoints;
   }
 
   init() {
@@ -60,10 +59,10 @@ export default class WaypointsPresenter {
         this.#waypointsModel.updateWaypoint(updateType, update);
         break;
       case UserAction.ADD_WAYPOINT:
-        this.#waypointsModel.ADD_WAYPOINT(updateType, update);
+        this.#waypointsModel.addWaypoint(updateType, update);
         break;
       case UserAction.DELETE_WAYPOINT:
-        this.#waypointsModel.DELETE_WAYPOINT(updateType, update);
+        this.#waypointsModel.deleteWaypoint(updateType, update);
         break;
     }
   };
@@ -89,6 +88,7 @@ export default class WaypointsPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
+
     this.#currentSortType = sortType;
     this.#clearPage();
     this.#renderPage();
@@ -146,6 +146,7 @@ export default class WaypointsPresenter {
 
   #renderPage() {
     const waypoints = this.waypoints;
+
 
     if (!waypoints.length) {
       this.#renderNoWaypoints();

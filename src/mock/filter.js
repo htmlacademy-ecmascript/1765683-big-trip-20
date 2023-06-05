@@ -8,7 +8,7 @@ dayjs.extend(isSameOrBefore);
 
 export const filter = {
 
-  [FilterType.EVERYTHING]: (waypoints) => waypoints,
+  [FilterType.EVERYTHING]: (waypoints) => [...waypoints],
   [FilterType.FUTURE]: (waypoints) => waypoints.filter((waypoint) => dayjs().isBefore(dayjs(waypoint.dateFrom))),
   [FilterType.PRESENT]: (waypoints) => waypoints.filter((waypoint) => {
     const now = dayjs();

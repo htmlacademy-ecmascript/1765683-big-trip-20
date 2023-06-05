@@ -98,14 +98,14 @@ export default class SingleWaypointPresenter {
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
       {...this.#waypoint,isFavorite: !this.#waypoint.isFavorite});
   };
 
   #handleFormSubmit = (waypoint) => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
       waypoint,
     );
