@@ -18,13 +18,3 @@ export const filter = {
   [FilterType.PAST]: (waypoints) => waypoints.filter((waypoint) => dayjs(waypoint.dateTo).isBefore(dayjs())),
 };
 
-export function generateFilter(waypoints) {
-  return Object.entries(filter).map(
-    ([filterType, filterWaypoints]) => ({
-      type: filterType,
-      count: filterWaypoints(waypoints).length,
-    }),
-  );
-}
-
-
