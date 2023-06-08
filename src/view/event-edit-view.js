@@ -122,7 +122,7 @@ function createEventEditTemplate(data) {
           </div>
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
-              <span class="visually-hidden">${basePrice}</span>
+              <span class="visually-hidden">Price</span>
               &euro;
             </label>
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
@@ -204,18 +204,18 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__type-group')
       .addEventListener('click', this.#eventTypeChangeHandler);
     this.element
-      .querySelector('#event-price-1')
-      .addEventListener('change', this.#destinationChangeHandler);
+      .querySelector('.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
     this.element
-      .querySelector('#event-destination-1')
-      .addEventListener('input', this.#priceChangeHandler);
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
 
     this.#setDatePickers();
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleSubmit(this._state);
+    this.#handleSubmit(EventEditView.parseStateToWaypoint(this._state));
   };
 
   #formCancelHandler = (evt) => {
@@ -241,13 +241,20 @@ export default class EventEditView extends AbstractStatefulView {
       ({ name }) => name === evt.target.value
     );
 
-    this.updateElement({ destination });
+    if (destination) {
+      this.updateElement({ ...this._state,
+        destination : destination.id });
+    }
+
   };
 
   #priceChangeHandler = (evt) => {
-    const basePrice = Number(evt.target.value);
+    evt.preventDefault();
+    this._setState({
+      ...this._state,
+      basePrice: evt.target.value,
+    });
 
-    this.updateElement({ basePrice });
   };
 
   #userFromDateChangeHandler = ([userDateFrom]) => {

@@ -27,7 +27,7 @@ export default class WaypointsPresenter {
     this.#filterModel = filterModel;
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
-      taskListContainer: this.#eventListComponent.element,
+      eventListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewWaypointDestroy,
     });

@@ -24,7 +24,7 @@ export default class NewWaypointPresenter {
 
     this.#eventEditComponent = new EventEditView({
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick,
+      onDelete: this.#handleDeleteClick,
     });
 
     render(
@@ -52,8 +52,6 @@ export default class NewWaypointPresenter {
     this.#handleDataChange(
       UserAction.ADD_WAYPOINT,
       UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
       { id: nanoid(), ...waypoint }
     );
     this.destroy();

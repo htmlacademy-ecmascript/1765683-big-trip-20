@@ -103,11 +103,11 @@ export default class SingleWaypointPresenter {
       {...this.#waypoint,isFavorite: !this.#waypoint.isFavorite});
   };
 
-  #handleFormSubmit = (waypoint) => {
+  #handleFormSubmit = (update) => {
     this.#handleDataChange(
       UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
-      waypoint,
+      update,
     );
     this.#replaceEditToInfo();
   };
