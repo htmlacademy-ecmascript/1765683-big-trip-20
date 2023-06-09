@@ -15,7 +15,7 @@ function createEventOffersSelectionTemplate(offers) {
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id} ${isChecked ? 'checked' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -67,6 +67,7 @@ function createEventDestinationSelectionTemplate(destination) {
   </section>
   `;
 }
+
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -141,7 +142,19 @@ function createEventEditTemplate(data) {
     </li>`;
 }
 
-const BLANK_EVENT = {};
+const DEFAULT_TYPE = 'Check-in';
+
+const NOW = new Date();
+
+const BLANK_EVENT = {
+  id: null,
+  type: DEFAULT_TYPE,
+  dateFrom: NOW,
+  dateTo: NOW,
+  basePrice: 0,
+  offers: [],
+  destination: '',
+  isFavorite: false};
 
 const DEFAULT_FLATPICKR_OPTIONS = {
   enableTime: true,
@@ -208,7 +221,13 @@ export default class EventEditView extends AbstractStatefulView {
       .addEventListener('change', this.#priceChangeHandler);
     this.element
       .querySelector('.event__input--destination')
-      .addEventListener('change', this.#destinationChangeHandler);
+      .addEventListener('click', this.#destinationChangeHandler);
+
+    const availableOffersContainer = this.element.querySelector('.event__available-offers');
+
+    if (availableOffersContainer) {
+      availableOffersContainer.addEventListener('change', this.#optionClickHandler);
+    }
 
     this.#setDatePickers();
   }
@@ -236,6 +255,7 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
+
   #destinationChangeHandler = (evt) => {
     const destination = DESTINATIONS.find(
       ({ name }) => name === evt.target.value
@@ -255,6 +275,18 @@ export default class EventEditView extends AbstractStatefulView {
       basePrice: evt.target.value,
     });
 
+  };
+
+  #optionClickHandler = (evt) => {
+    evt.preventDefault();
+    const selectedOptions = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+    this._setState({
+      waypoint: {
+        ...this._state.waypoint,
+        offers: selectedOptions.map((option) => option.value)
+      }
+    });
   };
 
   #userFromDateChangeHandler = ([userDateFrom]) => {
