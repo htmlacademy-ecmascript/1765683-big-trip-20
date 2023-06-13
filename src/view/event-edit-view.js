@@ -272,7 +272,7 @@ export default class EventEditView extends AbstractStatefulView {
     evt.preventDefault();
     this._setState({
       ...this._state,
-      basePrice: evt.target.value,
+      basePrice: Number(evt.target.value),
     });
 
   };
