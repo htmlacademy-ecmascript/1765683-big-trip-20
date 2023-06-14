@@ -46,6 +46,18 @@ export const FilterType = {
   PAST: 'past',
 };
 
+export const UserAction = {
+  UPDATE_WAYPOINT: 'UPDATE_WAYPOINT',
+  ADD_WAYPOINT: 'ADD_WAYPOINT',
+  DELETE_WAYPOINT: 'DELETE_WAYPOINT',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 export const DATE_FROM = [
   '2019-06-10T22:55:56.845Z',
   '2019-07-10T21:30:56.845Z',

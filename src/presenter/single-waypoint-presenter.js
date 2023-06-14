@@ -2,7 +2,7 @@ import { render } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
 import { replace, remove } from '../framework/render.js';
-import { Mode } from '../mock/const.js';
+import { Mode, UpdateType, UserAction } from '../mock/const.js';
 
 export default class SingleWaypointPresenter {
   #eventListContainer = null;
@@ -36,7 +36,8 @@ export default class SingleWaypointPresenter {
     this.#eventEditComponent = new EventEditView({
       waypoint: this.#waypoint,
       onFormSubmit: this.#handleFormSubmit,
-      onDelete: this.#handleFormCancel,
+      onCancel: this.#handleFormCancel,
+      onDelete: this.#handleDeleteClick,
     });
 
 
@@ -96,15 +97,27 @@ export default class SingleWaypointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({
-      ...this.#waypoint,
-      isFavorite: !this.#waypoint.isFavorite,
-    });
+    this.#handleDataChange(
+      UserAction.UPDATE_WAYPOINT,
+      UpdateType.MINOR,
+      {...this.#waypoint,isFavorite: !this.#waypoint.isFavorite});
   };
 
-  #handleFormSubmit = (waypoint) => {
-    this.#handleDataChange(waypoint);
+  #handleFormSubmit = (update) => {
+    this.#handleDataChange(
+      UserAction.UPDATE_WAYPOINT,
+      UpdateType.MINOR,
+      update,
+    );
     this.#replaceEditToInfo();
+  };
+
+  #handleDeleteClick = (waypoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint
+    );
   };
 
   #handleFormCancel = () => {

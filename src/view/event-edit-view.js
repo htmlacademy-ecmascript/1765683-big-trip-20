@@ -15,7 +15,7 @@ function createEventOffersSelectionTemplate(offers) {
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id} ${isChecked ? 'checked' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -67,6 +67,7 @@ function createEventDestinationSelectionTemplate(destination) {
   </section>
   `;
 }
+
 
 function createEventEditTemplate(data) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
@@ -122,7 +123,7 @@ function createEventEditTemplate(data) {
           </div>
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
-              <span class="visually-hidden">${basePrice}</span>
+              <span class="visually-hidden">Price</span>
               &euro;
             </label>
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
@@ -141,7 +142,19 @@ function createEventEditTemplate(data) {
     </li>`;
 }
 
-const BLANK_EVENT = {};
+const DEFAULT_TYPE = 'Check-in';
+
+const NOW = new Date();
+
+const BLANK_EVENT = {
+  id: null,
+  type: DEFAULT_TYPE,
+  dateFrom: NOW,
+  dateTo: NOW,
+  basePrice: 0,
+  offers: [],
+  destination: '',
+  isFavorite: false};
 
 const DEFAULT_FLATPICKR_OPTIONS = {
   enableTime: true,
@@ -156,12 +169,14 @@ export default class EventEditView extends AbstractStatefulView {
   #datePickerTo = null;
   #handleSubmit = null;
   #handleDelete = null;
+  #handleCancel = null;
 
-  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete }) {
+  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete, onCancel }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#handleSubmit = onFormSubmit;
     this.#handleDelete = onDelete;
+    this.#handleCancel = onCancel;
 
     this._restoreHandlers();
   }
@@ -194,7 +209,7 @@ export default class EventEditView extends AbstractStatefulView {
       .addEventListener('submit', this.#formSubmitHandler);
     this.element
       .querySelector('.event__reset-btn')
-      .addEventListener('click', this.#formCancelHandler);
+      .addEventListener('click', this.#formDeleteHandler);
     this.element
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#formCancelHandler);
@@ -202,23 +217,34 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__type-group')
       .addEventListener('click', this.#eventTypeChangeHandler);
     this.element
-      .querySelector('#event-price-1')
-      .addEventListener('change', this.#destinationChangeHandler);
+      .querySelector('.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
     this.element
-      .querySelector('#event-destination-1')
-      .addEventListener('input', this.#priceChangeHandler);
+      .querySelector('.event__input--destination')
+      .addEventListener('click', this.#destinationChangeHandler);
+
+    const availableOffersContainer = this.element.querySelector('.event__available-offers');
+
+    if (availableOffersContainer) {
+      availableOffersContainer.addEventListener('change', this.#optionClickHandler);
+    }
 
     this.#setDatePickers();
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleSubmit(this._state);
+    this.#handleSubmit(EventEditView.parseStateToWaypoint(this._state));
   };
 
   #formCancelHandler = (evt) => {
     evt.preventDefault();
-    this.#handleDelete();
+    this.#handleCancel();
+  };
+
+  #formDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDelete(EventEditView.parseStateToWaypoint(this._state));
   };
 
   #eventTypeChangeHandler = (evt) => {
@@ -229,18 +255,38 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
+
   #destinationChangeHandler = (evt) => {
     const destination = DESTINATIONS.find(
       ({ name }) => name === evt.target.value
     );
 
-    this.updateElement({ destination });
+    if (destination) {
+      this.updateElement({ ...this._state,
+        destination : destination.id });
+    }
+
   };
 
   #priceChangeHandler = (evt) => {
-    const basePrice = Number(evt.target.value);
+    evt.preventDefault();
+    this._setState({
+      ...this._state,
+      basePrice: Number(evt.target.value),
+    });
 
-    this.updateElement({ basePrice });
+  };
+
+  #optionClickHandler = (evt) => {
+    evt.preventDefault();
+    const selectedOptions = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+    this._setState({
+      waypoint: {
+        ...this._state.waypoint,
+        offers: selectedOptions.map((option) => option.value)
+      }
+    });
   };
 
   #userFromDateChangeHandler = ([userDateFrom]) => {
