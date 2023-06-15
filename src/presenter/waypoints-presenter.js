@@ -74,12 +74,15 @@ export default class WaypointsPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:
+        this.#waypointPresenters.get(update.id).setSaving();
         this.#waypointsModel.updateWaypoint(updateType, update);
         break;
       case UserAction.ADD_WAYPOINT:
+        this.#newWaypointPresenter.setSaving();
         this.#waypointsModel.addWaypoint(updateType, update);
         break;
       case UserAction.DELETE_WAYPOINT:
+        this.#waypointPresenters.get(update.id).setSaving();
         this.#waypointsModel.deleteWaypoint(updateType, update);
         break;
     }
