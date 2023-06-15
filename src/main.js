@@ -48,8 +48,8 @@ function handleNewEventButtonClick() {
   newEventButtonComponent.element.disabled = true;
 }
 
-render(newEventButtonComponent, newEventButtonContainer);
-
 waypointsPresenter.init();
 filtersPresenter.init();
-waypointsModel.init();
+waypointsModel.init().finally(() => {
+  render(newEventButtonComponent, newEventButtonContainer);
+});
