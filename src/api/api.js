@@ -33,7 +33,7 @@ export default class WayPointsApiService extends ApiService {
   }
 
   #adaptToServer(waypoint) {
-    const adaptedPoint = {
+    const adaptedWaypoint = {
       ...waypoint,
       'base_price': waypoint.basePrice,
       'date_from': waypoint.dateFrom instanceof Date ? waypoint.dateFrom.toISOString() : null,
@@ -41,11 +41,11 @@ export default class WayPointsApiService extends ApiService {
       'is_favorite': waypoint.isFavorite,
     };
 
-    delete adaptedPoint.basePrice;
-    delete adaptedPoint.dateFrom;
-    delete adaptedPoint.dateTo;
-    delete adaptedPoint.isFavorite;
+    delete adaptedWaypoint.basePrice;
+    delete adaptedWaypoint.dateFrom;
+    delete adaptedWaypoint.dateTo;
+    delete adaptedWaypoint.isFavorite;
 
-    return adaptedPoint;
+    return adaptedWaypoint;
   }
 }
