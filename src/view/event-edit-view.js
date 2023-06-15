@@ -10,12 +10,12 @@ function createEventOffersSelectionTemplate(offers) {
     return '';
   }
 
-  const createOfferItemTemplate = (offer) => {
+  const createOfferItemTemplate = (offer, isDisabled) => {
     const { id, title, price, isChecked } = offer;
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;

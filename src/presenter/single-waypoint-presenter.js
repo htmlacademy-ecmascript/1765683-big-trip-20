@@ -70,6 +70,24 @@ export default class SingleWaypointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
   #replaceInfoToEdit() {
     replace(this.#eventEditComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeydownHandler);
@@ -109,7 +127,6 @@ export default class SingleWaypointPresenter {
       UpdateType.MINOR,
       update,
     );
-    this.#replaceEditToInfo();
   };
 
   #handleDeleteClick = (waypoint) => {
