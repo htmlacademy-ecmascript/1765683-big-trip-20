@@ -54,7 +54,7 @@ export default class NewWaypointPresenter {
     this.#handleDataChange(
       UserAction.ADD_WAYPOINT,
       UpdateType.MINOR,
-      { id: nanoid(), ...waypoint }
+      { waypoint }
     );
     this.destroy();
   };
