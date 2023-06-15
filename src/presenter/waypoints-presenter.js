@@ -8,6 +8,12 @@ import { SortType, UpdateType, UserAction, FilterType } from '../mock/const.js';
 import { filter } from '../mock/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 import WaypointLoadingListView from '../view/waypoints-loading-list-view.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class WaypointsPresenter {
   #waypointsContainer = null;
@@ -23,6 +29,10 @@ export default class WaypointsPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({ waypointsContainer, waypointsModel, filterModel, onNewWaypointDestroy }) {
     this.#waypointsContainer = waypointsContainer;
@@ -72,6 +82,8 @@ export default class WaypointsPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:
         this.#waypointPresenters.get(update.id).setSaving();
@@ -99,6 +111,8 @@ export default class WaypointsPresenter {
 
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
