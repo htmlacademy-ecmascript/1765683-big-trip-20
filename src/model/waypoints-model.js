@@ -1,5 +1,5 @@
 import Observable from '../framework/observable.js';
-import { getRandomData } from '../mock/mock.js';
+import { UpdateType } from '../mock/const.js';
 
 export const WAYPOINTS_COUNT = 10;
 
@@ -7,20 +7,28 @@ export const WAYPOINTS_COUNT = 10;
 export default class WaypointsModel extends Observable {
   #waypointApiService = null;
 
-  #waypoints = Array.from({length: WAYPOINTS_COUNT}, getRandomData);
+  #waypoints = [];
 
   constructor({waypointsApiService}) {
     super();
     this.#waypointApiService = waypointsApiService;
 
-    this.#waypointApiService.waypoints.then((waypoints) => {
-      console.log(waypoints.map(this.#adaptToClient));
-    });
 
   }
 
   get waypoints() {
     return this.#waypoints;
+  }
+
+  async init() {
+    try {
+      const waypoints = await this.#waypointApiService.waypoints;
+      this.#waypoints = waypoints.map(this.#adaptToClient);
+    } catch(err) {
+      this.#waypoints = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   updateWaypoint(updateType, update) {

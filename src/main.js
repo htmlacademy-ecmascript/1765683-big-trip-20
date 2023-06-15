@@ -52,3 +52,4 @@ render(newEventButtonComponent, newEventButtonContainer);
 
 waypointsPresenter.init();
 filtersPresenter.init();
+waypointsModel.init();

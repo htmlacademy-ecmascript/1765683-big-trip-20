@@ -7,6 +7,7 @@ import SortView from '../view/sort-view.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../mock/const.js';
 import { filter } from '../mock/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
+import WaypointLoadingListView from '../view/waypoints-loading-list-view.js';
 
 export default class WaypointsPresenter {
   #waypointsContainer = null;
@@ -15,11 +16,13 @@ export default class WaypointsPresenter {
 
   #eventListComponent = new EventListView();
   #waypointPresenters = new Map();
+  #loadingComponent = new WaypointLoadingListView();
   #newWaypointPresenter = null;
   #sortComponent = null;
   #NoWaypointComponent = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor({ waypointsContainer, waypointsModel, filterModel, onNewWaypointDestroy }) {
     this.#waypointsContainer = waypointsContainer;
@@ -95,6 +98,11 @@ export default class WaypointsPresenter {
         this.#clearPage({resetSortType: true});
         this.#renderPage();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderPage();
+        break;
     }
   };
 
@@ -133,6 +141,10 @@ export default class WaypointsPresenter {
     waypoints.forEach((waypoint) => this.#renderWaypoint(waypoint));
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#waypointsContainer);
+  }
+
   #renderNoWaypoints() {
     this.#NoWaypointComponent = new EmptyListMessage({filterType: this.#filterType});
     render(this.#NoWaypointComponent, this.#eventListComponent.element);
@@ -163,6 +175,10 @@ export default class WaypointsPresenter {
   #renderPage() {
     const waypoints = this.waypoints;
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (!waypoints.length) {
       this.#renderNoWaypoints();
