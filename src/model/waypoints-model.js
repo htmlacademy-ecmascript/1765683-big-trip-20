@@ -70,9 +70,12 @@ export default class WaypointsModel extends Observable {
     try {
       const response = await this.#waypointApiService.addWaypoint(update);
       const newWaypoint = this.#adaptToClient(response);
+
       this.#waypoints = [newWaypoint, ...this.#waypoints];
       this._notify(updateType, newWaypoint);
+
     } catch(err) {
+
       throw new Error('Can\'t add waypoint');
     }
   }

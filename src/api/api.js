@@ -23,7 +23,7 @@ export default class WayPointsApiService extends ApiService {
 
   async addWaypoint(waypoint) {
     const response = await this._load({
-      url: `/points/${waypoint.id}`,
+      url: 'points',
       method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(waypoint)),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -34,7 +34,7 @@ export default class WayPointsApiService extends ApiService {
     return parsedResponse;
   }
 
-  async deleteTask(waypoint) {
+  async deleteWaypoint(waypoint) {
     const response = await this._load({
       url: `/points/${waypoint.id}`,
       method: Method.DELETE,
