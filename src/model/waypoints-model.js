@@ -7,6 +7,8 @@ export default class WaypointsModel extends Observable {
   #waypointApiService = null;
 
   #waypoints = [];
+  #offers = [];
+  #destinations = [];
 
   constructor({ waypointsApiService }) {
     super();
@@ -17,12 +19,25 @@ export default class WaypointsModel extends Observable {
     return this.#waypoints;
   }
 
+  get offers() {
+    return this.#offers;
+  }
+
+  get destinations() {
+    return this.#destinations;
+  }
+
   async init() {
     try {
       const waypoints = await this.#waypointApiService.waypoints;
-      this.#waypoints = waypoints.map(this.#adaptToClient);
+      this.#offers = await this.#waypointApiService.offers;
+      this.#destinations = await this.#waypointApiService.destinations;
+      this.#waypoints = waypoints.map((waypoint) => this.#adaptToClient(waypoint));
+
     } catch (err) {
       this.#waypoints = [];
+      this.#offers = [];
+      this.#destinations = [];
     }
 
     this._notify(UpdateType.INIT);
@@ -58,7 +73,7 @@ export default class WaypointsModel extends Observable {
       this.#waypoints = [newWaypoint, ...this.#waypoints];
       this._notify(updateType, newWaypoint);
     } catch(err) {
-      throw new Error('Can\'t add task');
+      throw new Error('Can\'t add waypoint');
     }
   }
 
@@ -83,6 +98,14 @@ export default class WaypointsModel extends Observable {
     }
   }
 
+  findOffers(type, ids) {
+    let offersArr = [];
+
+    offersArr = this.offers.find((item) => item.type === type);
+    offersArr = ids.map((id) => offersArr.offers.find((item) => item.id === id));
+    return offersArr;
+  }
+
   #adaptToClient(waypoint) {
     const adaptedWaypoint = {
       ...waypoint,
@@ -96,6 +119,8 @@ export default class WaypointsModel extends Observable {
           ? new Date(waypoint['date_to'])
           : waypoint['date_to'],
       isFavorite: waypoint['is_favorite'],
+      destination: this.#destinations.find((item) => item.id === waypoint.destination),
+      offers: this.findOffers(waypoint.type, waypoint.offers)
     };
 
     delete adaptedWaypoint['base_price'];
