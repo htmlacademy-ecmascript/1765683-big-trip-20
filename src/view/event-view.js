@@ -4,7 +4,7 @@ import {
   humanizeDateFromDate,
   humanizeDurationFromDates,
   humanizeTimeFromDate,
-} from '../mock/util.js';
+} from '../util/util.js';
 
 function createEventOfferTemplate(offer) {
   return `

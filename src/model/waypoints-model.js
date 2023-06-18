@@ -1,5 +1,6 @@
 import Observable from '../framework/observable.js';
-import { UpdateType } from '../mock/const.js';
+import { UpdateType } from '../util/const.js';
+
 
 export const WAYPOINTS_COUNT = 10;
 

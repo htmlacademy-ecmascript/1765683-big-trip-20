@@ -2,20 +2,23 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { DESTINATIONS } from '../mock/mock.js';
-import { TRAVEL_WAYPOINTS, WAYPOINT_TYPES } from '../mock/const.js';
+import { DESTINATIONS } from '../util/mock.js';
+import { TRAVEL_WAYPOINTS, WAYPOINT_TYPES } from '../util/const.js';
+import he from 'he';
 
 function createEventOffersSelectionTemplate(offers) {
   if (!offers.length) {
     return '';
   }
 
-  const createOfferItemTemplate = (offer, isDisabled) => {
-    const { id, title, price, isChecked } = offer;
+  const createOfferItemTemplate = (offer) => {
+    const { id, title, price, isDisabled } = offer;
+
+    const isChecked = offers.includes(offer.id) ? 'checked' : '';
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked} ${isDisabled ? 'disabled' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -70,7 +73,7 @@ function createEventDestinationSelectionTemplate(destination) {
 
 
 function createEventEditTemplate(data) {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
+  const { basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isDeleting, isSaving } = data;
 
   const timeFrom = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(dateTo).format('DD/MM/YY HH:mm');
@@ -95,7 +98,7 @@ function createEventEditTemplate(data) {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type}">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
@@ -126,10 +129,10 @@ function createEventEditTemplate(data) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${he.encode(`${basePrice}`)}>
           </div>
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset"${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -262,7 +265,7 @@ export default class EventEditView extends AbstractStatefulView {
     );
 
     if (destination) {
-      this.updateElement({ ...this._state,
+      this.updateElement({
         destination : destination.id });
     }
 

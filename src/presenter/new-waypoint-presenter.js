@@ -1,6 +1,6 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
-import { UserAction, UpdateType } from '../mock/const.js';
+import { UserAction, UpdateType } from '../util/const.js';
 
 
 export default class NewWaypointPresenter {
