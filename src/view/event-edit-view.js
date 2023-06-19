@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { DESTINATIONS } from '../util/mock.js';
 import { TRAVEL_WAYPOINTS, WAYPOINT_TYPES } from '../util/const.js';
 import he from 'he';
 
@@ -12,13 +11,13 @@ function createEventOffersSelectionTemplate(offers) {
   }
 
   const createOfferItemTemplate = (offer) => {
-    const { id, title, price, isDisabled } = offer;
+    const { id, title, price, isDisabled} = offer;
 
     const isChecked = offers.includes(offer.id) ? 'checked' : '';
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked} ${isDisabled ? 'disabled' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -156,7 +155,12 @@ const BLANK_EVENT = {
   dateTo: NOW,
   basePrice: 0,
   offers: [],
-  destination: '',
+  destination: {
+    description: '',
+    id: '',
+    name: '',
+    pictures: []
+  },
   isFavorite: false};
 
 const DEFAULT_FLATPICKR_OPTIONS = {
@@ -222,9 +226,9 @@ export default class EventEditView extends AbstractStatefulView {
     this.element
       .querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
-    this.element
+    /*this.element
       .querySelector('.event__input--destination')
-      .addEventListener('click', this.#destinationChangeHandler);
+      .addEventListener('click', this.#destinationChangeHandler);*/
 
     const availableOffersContainer = this.element.querySelector('.event__available-offers');
 

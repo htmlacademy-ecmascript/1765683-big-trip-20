@@ -2,8 +2,6 @@ import Observable from '../framework/observable.js';
 import { UpdateType } from '../util/const.js';
 
 
-export const WAYPOINTS_COUNT = 10;
-
 export default class WaypointsModel extends Observable {
   #waypointApiService = null;
 
@@ -34,14 +32,16 @@ export default class WaypointsModel extends Observable {
       this.#offers = await this.#waypointApiService.offers;
       this.#destinations = await this.#waypointApiService.destinations;
       this.#waypoints = waypoints.map((waypoint) => this.#adaptToClient(waypoint));
+      this._notify(UpdateType.INIT);
 
     } catch (err) {
       this.#waypoints = [];
       this.#offers = [];
       this.#destinations = [];
+      this._notify(UpdateType.ERROR);
+      throw new Error('Can\'t load data properly');
     }
 
-    this._notify(UpdateType.INIT);
   }
 
   async updateWaypoint(updateType, update) {
@@ -102,7 +102,7 @@ export default class WaypointsModel extends Observable {
     }
   }
 
-  findOffers(type, ids) {
+  #findOffers(type, ids) {
     let offersArr = [];
 
     offersArr = this.offers.find((item) => item.type === type);
@@ -124,7 +124,7 @@ export default class WaypointsModel extends Observable {
           : waypoint['date_to'],
       isFavorite: waypoint['is_favorite'],
       destination: this.#destinations.find((item) => item.id === waypoint.destination),
-      offers: this.findOffers(waypoint.type, waypoint.offers)
+      offers: this.#findOffers(waypoint.type, waypoint.offers)
     };
 
     delete adaptedWaypoint['base_price'];

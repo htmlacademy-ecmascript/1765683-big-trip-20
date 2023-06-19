@@ -9,6 +9,7 @@ import { filter } from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 import WaypointLoadingListView from '../view/waypoints-loading-list-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import ErrorView from '../view/waypoints-error-list-view.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -25,6 +26,7 @@ export default class WaypointsPresenter {
   #loadingComponent = new WaypointLoadingListView();
   #newWaypointPresenter = null;
   #sortComponent = null;
+  #errorComponent = new ErrorView();
   #NoWaypointComponent = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
@@ -133,6 +135,10 @@ export default class WaypointsPresenter {
         remove(this.#loadingComponent);
         this.#renderPage();
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderError();
     }
   };
 
@@ -175,6 +181,10 @@ export default class WaypointsPresenter {
     render(this.#loadingComponent, this.#waypointsContainer);
   }
 
+  #renderError() {
+    render(this.#errorComponent, this.#waypointsContainer);
+  }
+
   #renderNoWaypoints() {
     this.#NoWaypointComponent = new EmptyListMessage({filterType: this.#filterType});
     render(this.#NoWaypointComponent, this.#eventListComponent.element);
@@ -186,6 +196,7 @@ export default class WaypointsPresenter {
     this.#waypointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if(this.#NoWaypointComponent) {
       remove(this.#NoWaypointComponent);
