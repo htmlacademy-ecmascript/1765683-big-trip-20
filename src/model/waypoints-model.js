@@ -3,7 +3,7 @@ import { UpdateType } from '../util/const.js';
 
 
 export default class WaypointsModel extends Observable {
-  #waypointApiService = null;
+  #waypointsApiService = null;
 
   #waypoints = [];
   #offers = [];
@@ -11,7 +11,7 @@ export default class WaypointsModel extends Observable {
 
   constructor({ waypointsApiService }) {
     super();
-    this.#waypointApiService = waypointsApiService;
+    this.#waypointsApiService = waypointsApiService;
   }
 
   get waypoints() {
@@ -28,9 +28,9 @@ export default class WaypointsModel extends Observable {
 
   async init() {
     try {
-      const waypoints = await this.#waypointApiService.waypoints;
-      this.#offers = await this.#waypointApiService.offers;
-      this.#destinations = await this.#waypointApiService.destinations;
+      const waypoints = await this.#waypointsApiService.waypoints;
+      this.#offers = await this.#waypointsApiService.offers;
+      this.#destinations = await this.#waypointsApiService.destinations;
       this.#waypoints = waypoints.map((waypoint) => this.#adaptToClient(waypoint));
       this._notify(UpdateType.INIT);
 
@@ -54,7 +54,7 @@ export default class WaypointsModel extends Observable {
     }
 
     try {
-      const response = await this.#waypointApiService.updateWaypoint(update);
+      const response = await this.#waypointsApiService.updateWaypoint(update);
       const updatedWaypoint = this.#adaptToClient(response);
       this.#waypoints = [
         ...this.#waypoints.slice(0, index),
@@ -69,7 +69,7 @@ export default class WaypointsModel extends Observable {
 
   async addWaypoint(updateType, update) {
     try {
-      const response = await this.#waypointApiService.addWaypoint(update);
+      const response = await this.#waypointsApiService.addWaypoint(update);
       const newWaypoint = this.#adaptToClient(response);
 
       this.#waypoints = [newWaypoint, ...this.#waypoints];
@@ -91,7 +91,7 @@ export default class WaypointsModel extends Observable {
     }
 
     try {
-      await this.#waypointApiService.deleteWaypoint(update);
+      await this.#waypointsApiService.deleteWaypoint(update);
       this.#waypoints = [
         ...this.#waypoints.slice(0, index),
         ...this.#waypoints.slice(index + 1),
