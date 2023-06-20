@@ -294,10 +294,10 @@ export default class EventEditView extends AbstractStatefulView {
     const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
 
 
-    this._setState({
+    this.updateElement({
       waypoint: {
         ...this._state,
-        destination: selectedDestinationId.name
+        destination: selectedDestinationId
       } });
 
 
