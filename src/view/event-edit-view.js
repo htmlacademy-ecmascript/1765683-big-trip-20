@@ -296,8 +296,8 @@ export default class EventEditView extends AbstractStatefulView {
 
     this._setState({
       waypoint: {
-        ...this._state.waypoint,
-        destination: selectedDestinationId
+        ...this._state,
+        destination: selectedDestinationId.name
       } });
 
 
@@ -306,9 +306,10 @@ export default class EventEditView extends AbstractStatefulView {
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      ...this._state,
-      basePrice: Number(evt.target.value),
-    });
+      waypoint: {
+        ...this._state,
+        basePrice: Number(evt.target.value),
+}});
 
   };
 
