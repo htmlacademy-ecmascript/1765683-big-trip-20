@@ -42,6 +42,8 @@ export default class WaypointsPresenter {
     this.#filterModel = filterModel;
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
+      offers: this.#waypointsModel.offers,
+      destinations: this.#waypointsModel.destinations,
       eventListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewWaypointDestroy,
@@ -166,6 +168,7 @@ export default class WaypointsPresenter {
   #renderWaypoint(waypoint) {
     const singleWaypointPresenter = new SingleWaypointPresenter({
       eventListComponent: this.#eventListComponent.element,
+      waypointsModel: this.#waypointsModel,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });

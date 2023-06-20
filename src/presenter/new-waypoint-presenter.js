@@ -8,12 +8,17 @@ export default class NewWaypointPresenter {
   #handleDataChange = null;
   #handleDestroy = null;
 
+  #offers = null;
+  #destinations = null;
+
   #eventEditComponent = null;
 
-  constructor({ eventListContainer, onDataChange, onDestroy }) {
+  constructor({ eventListContainer, onDataChange, onDestroy, offers, destinations }) {
     this.#eventListContainer = eventListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   init() {
@@ -22,6 +27,8 @@ export default class NewWaypointPresenter {
     }
 
     this.#eventEditComponent = new EventEditView({
+      offers: this.#offers,
+      destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
       onDelete: this.#handleDeleteClick,
       onCancel: this.#handleCancelClick

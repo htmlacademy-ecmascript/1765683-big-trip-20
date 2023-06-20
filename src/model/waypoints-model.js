@@ -39,7 +39,7 @@ export default class WaypointsModel extends Observable {
       this.#offers = [];
       this.#destinations = [];
       this._notify(UpdateType.ERROR);
-      throw new Error('Can\'t load data properly');
+      throw new Error('Can\'t recive data properly');
     }
 
   }
@@ -134,4 +134,5 @@ export default class WaypointsModel extends Observable {
 
     return adaptedWaypoint;
   }
+
 }

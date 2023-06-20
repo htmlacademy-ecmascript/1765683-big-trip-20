@@ -9,16 +9,19 @@ export default class SingleWaypointPresenter {
   #handleDataChange = null;
   #handleModeChange = null;
 
+  #waypointsModel = null;
+
   #eventComponent = null;
   #eventEditComponent = null;
 
   #waypoint = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ eventListComponent, onDataChange, onModeChange }) {
+  constructor({ eventListComponent, onDataChange, onModeChange, waypointsModel }) {
     this.#eventListContainer = eventListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#waypointsModel = waypointsModel;
   }
 
   init(waypoint) {
@@ -26,6 +29,7 @@ export default class SingleWaypointPresenter {
 
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
+
 
     this.#eventComponent = new EventView({
       waypoint: this.#waypoint,
@@ -35,6 +39,8 @@ export default class SingleWaypointPresenter {
 
     this.#eventEditComponent = new EventEditView({
       waypoint: this.#waypoint,
+      offers: this.#waypointsModel.offers,
+      destinations: this.#waypointsModel.destinations,
       onFormSubmit: this.#handleFormSubmit,
       onCancel: this.#handleFormCancel,
       onDelete: this.#handleDeleteClick,

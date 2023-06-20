@@ -2,22 +2,26 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { TRAVEL_WAYPOINTS, WAYPOINT_TYPES } from '../util/const.js';
+import { WAYPOINT_TYPES } from '../util/const.js';
 import he from 'he';
 
-function createEventOffersSelectionTemplate(offers) {
+function createEventOffersSelectionTemplate(waypoint ,offers) {
   if (!offers.length) {
     return '';
   }
 
+  const offersByType = offers.find((offer) => offer.type === waypoint.type)?.offers;
+  const offersById = [...offersByType.filter((offer) => waypoint.offers.find((id) => offer.id === id))];
+
   const createOfferItemTemplate = (offer) => {
     const { id, title, price, isDisabled} = offer;
 
-    const isChecked = offers.includes(offer.id) ? 'checked' : '';
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id} 
+       ${isDisabled ? 'disabled' : ''}
+       ${offersById.find((item) => id === item.id) ? 'checked' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -31,10 +35,36 @@ function createEventOffersSelectionTemplate(offers) {
   <section class="event__section event__section--offers">
     <h3 class="event__section-title event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${offers.map(createOfferItemTemplate).join('')}
+      ${offersById.map(createOfferItemTemplate).join('')}
     </div>
   </section>
   `;
+}
+
+function createDestinationList(waypoint, destinations, type, isDisabled) {
+  const destination = destinations.find((item) => item.id === waypoint?.id);
+
+  return (
+    `
+    <div class="event__field-group  event__field-group--destination">
+    <label class="event__label  event__type-output" for="event-destination-1">
+      ${type}
+    </label>
+    <input class="event__input  event__input--destination" 
+    id="event-destination-1" 
+    type="text" 
+    name="event-destination"
+    ${isDisabled ? 'disabled' : ''} 
+    value="${destination ? destination.name : ''}" list="destination-list-1">
+    <datalist id="destination-list-1">
+    ${destinations.map((item) => ` 
+          <option ${item.id === waypoint.destination ? 'selected' : ''} value="${item.name}">${item.name}</option>
+       `).join('')}
+    </datalist>
+    </div>
+  `
+  );
+
 }
 
 function createEventDestinationSelectionTemplate(destination) {
@@ -71,8 +101,11 @@ function createEventDestinationSelectionTemplate(destination) {
 }
 
 
-function createEventEditTemplate(data) {
-  const { basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isDeleting, isSaving } = data;
+function createEventEditTemplate({state, destinations, offers}) {
+
+  const waypoint = state;
+  const {basePrice, dateFrom, dateTo, destination, type, isDisabled, isDeleting, isSaving } = state;
+
 
   const timeFrom = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(dateTo).format('DD/MM/YY HH:mm');
@@ -105,17 +138,7 @@ function createEventEditTemplate(data) {
               </fieldset>
             </div>
           </div>
-          <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__type-output" for="event-destination-1">
-              ${type}
-            </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination.name} list="destination-list-1">
-            <datalist id="destination-list-1">
-            ${TRAVEL_WAYPOINTS.map((point) => ` 
-                  <option value="${point}"></option>
-               `).join('')}
-            </datalist>
-          </div>
+          ${createDestinationList(waypoint.destination, destinations, type, isDisabled)}
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
@@ -137,7 +160,7 @@ function createEventEditTemplate(data) {
           </button>
         </header>
         <section class="event__details">
-          ${createEventOffersSelectionTemplate(offers)}
+          ${createEventOffersSelectionTemplate(state, offers)}
           ${createEventDestinationSelectionTemplate(destination)}
         </section>
       </form>
@@ -155,12 +178,7 @@ const BLANK_EVENT = {
   dateTo: NOW,
   basePrice: 0,
   offers: [],
-  destination: {
-    description: '',
-    id: '',
-    name: '',
-    pictures: []
-  },
+  destination: null,
   isFavorite: false};
 
 const DEFAULT_FLATPICKR_OPTIONS = {
@@ -178,18 +196,23 @@ export default class EventEditView extends AbstractStatefulView {
   #handleDelete = null;
   #handleCancel = null;
 
-  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete, onCancel }) {
+  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete, onCancel, offers, destinations }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#handleSubmit = onFormSubmit;
     this.#handleDelete = onDelete;
     this.#handleCancel = onCancel;
+    this.offers = offers;
+    this.destinations = destinations;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(this._state);
+    return createEventEditTemplate({
+      state: this._state,
+      destinations: this.destinations,
+      offers: this.offers});
   }
 
   removeElement() {
@@ -226,9 +249,9 @@ export default class EventEditView extends AbstractStatefulView {
     this.element
       .querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
-    /*this.element
+    this.element
       .querySelector('.event__input--destination')
-      .addEventListener('click', this.#destinationChangeHandler);*/
+      .addEventListener('change', this.#destinationChangeHandler);
 
     const availableOffersContainer = this.element.querySelector('.event__available-offers');
 
@@ -264,14 +287,19 @@ export default class EventEditView extends AbstractStatefulView {
 
 
   #destinationChangeHandler = (evt) => {
-    const destination = DESTINATIONS.find(
-      ({ name }) => name === evt.target.value
-    );
+    evt.preventDefault();
 
-    if (destination) {
-      this.updateElement({
-        destination : destination.id });
-    }
+    const selectedDestination = this.destinations.find((destination) => destination.name === evt.target.value);
+
+    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
+
+
+    this._setState({
+      waypoint: {
+        ...this._state.waypoint,
+        destination: selectedDestinationId
+      } });
+
 
   };
 
