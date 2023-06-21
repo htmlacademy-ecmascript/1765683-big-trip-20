@@ -16,7 +16,8 @@ function createEventOfferTemplate(offer) {
 }
 
 function createEventTemplate(data) {
-  const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = data;
+  const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } =
+    data;
 
   const isFavoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
@@ -33,7 +34,7 @@ function createEventTemplate(data) {
             &mdash;
             <time class="event__end-time" datetime="${dateTo}">${humanizeTimeFromDate(dateTo)}</time>
           </p>
-          <p class="event__duration">${humanizeDurationFromDates(dateFrom, dateTo)}</p>
+          <p class="event__duration">${humanizeDurationFromDates(dateFrom,dateTo)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -56,7 +57,6 @@ function createEventTemplate(data) {
 }
 
 export default class EventView extends AbstractView {
-
   #waypoint = null;
   #onEditClick = null;
   #onFavoriteClick = null;
@@ -89,5 +89,4 @@ export default class EventView extends AbstractView {
     evt.preventDefault();
     this.#onFavoriteClick();
   };
-
 }

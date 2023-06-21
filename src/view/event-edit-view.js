@@ -5,17 +5,22 @@ import 'flatpickr/dist/flatpickr.min.css';
 import { WAYPOINT_TYPES } from '../util/const.js';
 import he from 'he';
 
-function createEventOffersSelectionTemplate(waypoint ,offers) {
+function createEventOffersSelectionTemplate(waypoint, offers) {
   if (!offers.length) {
     return '';
   }
 
-  const offersByType = offers.find((offer) => offer.type === waypoint.type)?.offers;
-  const offersById = [...offersByType.filter((offer) => waypoint.offers.find((id) => offer.id === id))];
+  const offersByType = offers.find(
+    (offer) => offer.type === waypoint.type
+  )?.offers;
+  const offersById = [
+    ...offersByType.filter((offer) =>
+      waypoint.offers.find((id) => offer.id === id)
+    ),
+  ];
 
   const createOfferItemTemplate = (offer) => {
-    const { id, title, price, isDisabled} = offer;
-
+    const { id, title, price, isDisabled } = offer;
 
     return `
     <div class="event__offer-selector">
@@ -44,9 +49,7 @@ function createEventOffersSelectionTemplate(waypoint ,offers) {
 function createDestinationList(waypoint, destinations, type, isDisabled) {
   const destination = destinations.find((item) => item.id === waypoint?.id);
 
-
-  return (
-    `
+  return `
     <div class="event__field-group  event__field-group--destination">
     <label class="event__label  event__type-output" for="event-destination-1">
       ${type}
@@ -63,9 +66,7 @@ function createDestinationList(waypoint, destinations, type, isDisabled) {
        `).join('')}
     </datalist>
     </div>
-  `
-  );
-
+  `;
 }
 
 function createEventDestinationSelectionTemplate(destination) {
@@ -76,7 +77,7 @@ function createEventDestinationSelectionTemplate(destination) {
   const { description, pictures } = destination;
 
   const createPicturesTemplate = (photos) => {
-    if(!photos.length) {
+    if (!photos.length) {
       return '';
     }
 
@@ -89,7 +90,6 @@ function createEventDestinationSelectionTemplate(destination) {
       </div>
     </div>
     `;
-
   };
 
   return `
@@ -101,27 +101,34 @@ function createEventDestinationSelectionTemplate(destination) {
   `;
 }
 
-
-function createEventEditTemplate({state, destinations, offers}) {
-
+function createEventEditTemplate({ state, destinations, offers }) {
   const waypoint = state;
-  const {basePrice, dateFrom, dateTo, destination, type, isDisabled, isDeleting, isSaving } = state;
-
+  const {
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    type,
+    isDisabled,
+    isDeleting,
+    isSaving,
+  } = state;
 
   const timeFrom = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(dateTo).format('DD/MM/YY HH:mm');
 
-  const createSelectTypesTemplate = (selectedType) => WAYPOINT_TYPES.map((waypointType) => {
-    const checkedAttribute = waypointType === selectedType ? 'checked' : '';
-    const lowerType = waypointType.toLowerCase();
+  const createSelectTypesTemplate = (selectedType) =>
+    WAYPOINT_TYPES.map((waypointType) => {
+      const checkedAttribute = waypointType === selectedType ? 'checked' : '';
+      const lowerType = waypointType.toLowerCase();
 
-    return `
+      return `
     <div class="event__type-item">
      <input id="event-type-${lowerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowerType}" ${checkedAttribute}>
      <label class="event__type-label  event__type-label--${lowerType}" for="event-type-${lowerType}-1">${waypointType}</label>
     </div>
     `;
-  }).join('');
+    }).join('');
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -139,7 +146,7 @@ function createEventEditTemplate({state, destinations, offers}) {
               </fieldset>
             </div>
           </div>
-          ${createDestinationList(waypoint.destination, destinations, type, isDisabled)}
+          ${createDestinationList(waypoint.destination, destinations,type,isDisabled)}
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
@@ -180,7 +187,8 @@ const BLANK_EVENT = {
   basePrice: 0,
   offers: [],
   destination: null,
-  isFavorite: false};
+  isFavorite: false,
+};
 
 const DEFAULT_FLATPICKR_OPTIONS = {
   enableTime: true,
@@ -199,7 +207,14 @@ export default class EventEditView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
 
-  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete, onCancel, offers, destinations }) {
+  constructor({
+    waypoint = BLANK_EVENT,
+    onFormSubmit,
+    onDelete,
+    onCancel,
+    offers,
+    destinations,
+  }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#handleSubmit = onFormSubmit;
@@ -215,7 +230,8 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate({
       state: this._state,
       destinations: this.#destinations,
-      offers: this.#offers});
+      offers: this.#offers,
+    });
   }
 
   removeElement() {
@@ -256,10 +272,15 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
-    const availableOffersContainer = this.element.querySelector('.event__available-offers');
+    const availableOffersContainer = this.element.querySelector(
+      '.event__available-offers'
+    );
 
     if (availableOffersContainer) {
-      availableOffersContainer.addEventListener('change', this.#optionClickHandler);
+      availableOffersContainer.addEventListener(
+        'change',
+        this.#optionClickHandler
+      );
     }
 
     this.#setDatePickers();
@@ -288,16 +309,16 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    const currentDestination = this.#destinations
-      .find((destination) => destination.name === evt.target.value);
+    const currentDestination = this.#destinations.find(
+      (destination) => destination.name === evt.target.value
+    );
 
     if (currentDestination) {
       this.updateElement({
         ...this._state,
-        destination: currentDestination.id
+        destination: currentDestination.id,
       });
     }
   };
@@ -308,19 +329,21 @@ export default class EventEditView extends AbstractStatefulView {
       waypoint: {
         ...this._state,
         basePrice: Number(evt.target.value),
-      }});
-
+      },
+    });
   };
 
   #optionClickHandler = (evt) => {
     evt.preventDefault();
-    const selectedOptions = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const selectedOptions = Array.from(
+      this.element.querySelectorAll('.event__offer-checkbox:checked')
+    );
 
     this._setState({
       waypoint: {
         ...this._state.waypoint,
-        offers: selectedOptions.map((option) => option.value)
-      }
+        offers: selectedOptions.map((option) => option.value),
+      },
     });
   };
 

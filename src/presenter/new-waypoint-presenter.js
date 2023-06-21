@@ -2,7 +2,6 @@ import { render, remove, RenderPosition } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import { UserAction, UpdateType } from '../util/const.js';
 
-
 export default class NewWaypointPresenter {
   #eventListContainer = null;
   #handleDataChange = null;
@@ -13,7 +12,13 @@ export default class NewWaypointPresenter {
 
   #eventEditComponent = null;
 
-  constructor({ eventListContainer, onDataChange, onDestroy, offers, destinations }) {
+  constructor({
+    eventListContainer,
+    onDataChange,
+    onDestroy,
+    offers,
+    destinations,
+  }) {
     this.#eventListContainer = eventListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
@@ -31,7 +36,7 @@ export default class NewWaypointPresenter {
       destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
       onDelete: this.#handleDeleteClick,
-      onCancel: this.#handleCancelClick
+      onCancel: this.#handleCancelClick,
     });
 
     render(
@@ -75,13 +80,10 @@ export default class NewWaypointPresenter {
     this.#eventEditComponent.shake(resetFormState);
   }
 
-
   #handleFormSubmit = (waypoint) => {
-    this.#handleDataChange(
-      UserAction.ADD_WAYPOINT,
-      UpdateType.MINOR,
-      { waypoint }
-    );
+    this.#handleDataChange(UserAction.ADD_WAYPOINT, UpdateType.MINOR, {
+      waypoint,
+    });
   };
 
   #handleDeleteClick = () => {

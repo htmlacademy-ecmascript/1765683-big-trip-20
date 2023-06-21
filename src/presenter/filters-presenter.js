@@ -9,7 +9,6 @@ export default class FiltersPresenter {
   #filterModel = null;
   #filterComponent = null;
 
-
   constructor({ filtersContainer, waypointsModel, filterModel }) {
     this.#filtersContainer = filtersContainer;
     this.#waypointsModel = waypointsModel;
@@ -24,7 +23,7 @@ export default class FiltersPresenter {
 
     return Object.values(FilterType).map((type) => ({
       type,
-      count: filter[type](waypoints).length
+      count: filter[type](waypoints).length,
     }));
   }
 
@@ -35,7 +34,7 @@ export default class FiltersPresenter {
     this.#filterComponent = new FilterView({
       filters,
       currentFilterType: this.#filterModel.filter,
-      onFilterTypeChange: this.#handleFilterTypeChange
+      onFilterTypeChange: this.#handleFilterTypeChange,
     });
 
     if (prevFilterComponent === null) {
@@ -58,6 +57,4 @@ export default class FiltersPresenter {
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
-
 }
-

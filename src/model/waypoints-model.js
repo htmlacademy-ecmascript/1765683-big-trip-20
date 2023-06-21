@@ -1,7 +1,6 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../util/const.js';
 
-
 export default class WaypointsModel extends Observable {
   #waypointsApiService = null;
 
@@ -31,9 +30,10 @@ export default class WaypointsModel extends Observable {
       const waypoints = await this.#waypointsApiService.waypoints;
       this.#offers = await this.#waypointsApiService.offers;
       this.#destinations = await this.#waypointsApiService.destinations;
-      this.#waypoints = waypoints.map((waypoint) => this.#adaptToClient(waypoint));
+      this.#waypoints = waypoints.map((waypoint) =>
+        this.#adaptToClient(waypoint)
+      );
       this._notify(UpdateType.INIT);
-
     } catch (err) {
       this.#waypoints = [];
       this.#offers = [];
@@ -41,7 +41,6 @@ export default class WaypointsModel extends Observable {
       this._notify(UpdateType.ERROR);
       throw new Error('Can\'t recive data properly');
     }
-
   }
 
   async updateWaypoint(updateType, update) {
@@ -74,9 +73,7 @@ export default class WaypointsModel extends Observable {
 
       this.#waypoints = [newWaypoint, ...this.#waypoints];
       this._notify(updateType, newWaypoint);
-
-    } catch(err) {
-
+    } catch (err) {
       throw new Error('Can\'t add waypoint');
     }
   }
@@ -97,7 +94,7 @@ export default class WaypointsModel extends Observable {
         ...this.#waypoints.slice(index + 1),
       ];
       this._notify(updateType);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t delete waypoint');
     }
   }
@@ -106,7 +103,9 @@ export default class WaypointsModel extends Observable {
     let offersArr = [];
 
     offersArr = this.offers.find((item) => item.type === type);
-    offersArr = ids.map((id) => offersArr.offers.find((item) => item.id === id));
+    offersArr = ids.map((id) =>
+      offersArr.offers.find((item) => item.id === id)
+    );
     return offersArr;
   }
 
@@ -123,8 +122,10 @@ export default class WaypointsModel extends Observable {
           ? new Date(waypoint['date_to'])
           : waypoint['date_to'],
       isFavorite: waypoint['is_favorite'],
-      destination: this.#destinations.find((item) => item.id === waypoint.destination),
-      offers: this.#findOffers(waypoint.type, waypoint.offers)
+      destination: this.#destinations.find(
+        (item) => item.id === waypoint.destination
+      ),
+      offers: this.#findOffers(waypoint.type, waypoint.offers),
     };
 
     delete adaptedWaypoint['base_price'];
@@ -134,5 +135,4 @@ export default class WaypointsModel extends Observable {
 
     return adaptedWaypoint;
   }
-
 }

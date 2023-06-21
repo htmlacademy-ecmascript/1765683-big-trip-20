@@ -19,7 +19,6 @@ export const WAYPOINT_TYPES = [
   'Restaurant',
 ];
 
-
 export const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -51,5 +50,3 @@ export const UpdateType = {
   INIT: 'INIT',
   ERROR: 'ERROR',
 };
-
-

@@ -17,7 +17,12 @@ export default class SingleWaypointPresenter {
   #waypoint = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ eventListComponent, onDataChange, onModeChange, waypointsModel }) {
+  constructor({
+    eventListComponent,
+    onDataChange,
+    onModeChange,
+    waypointsModel,
+  }) {
     this.#eventListContainer = eventListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -29,7 +34,6 @@ export default class SingleWaypointPresenter {
 
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
-
 
     this.#eventComponent = new EventView({
       waypoint: this.#waypoint,
@@ -45,7 +49,6 @@ export default class SingleWaypointPresenter {
       onCancel: this.#handleFormCancel,
       onDelete: this.#handleDeleteClick,
     });
-
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this.#eventComponent, this.#eventListContainer);
@@ -138,17 +141,17 @@ export default class SingleWaypointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange(
-      UserAction.UPDATE_WAYPOINT,
-      UpdateType.MINOR,
-      {...this.#waypoint,isFavorite: !this.#waypoint.isFavorite});
+    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.MINOR, {
+      ...this.#waypoint,
+      isFavorite: !this.#waypoint.isFavorite,
+    });
   };
 
   #handleFormSubmit = (update) => {
     this.#handleDataChange(
       UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
-      update,
+      update
     );
   };
 

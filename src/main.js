@@ -7,7 +7,6 @@ import { render } from './framework/render.js';
 import { nanoid } from 'nanoid';
 import WayPointsApiService from './api/api.js';
 
-
 const randomAutId = nanoid();
 
 const AUTHORIZATION = `Basic ${randomAutId}`;
@@ -19,7 +18,9 @@ const filtersContainer = document.querySelector(
 );
 const newEventButtonContainer = document.querySelector('.trip-main');
 
-const waypointsModel = new WaypointsModel({waypointsApiService: new WayPointsApiService(END_POINT, AUTHORIZATION)});
+const waypointsModel = new WaypointsModel({
+  waypointsApiService: new WayPointsApiService(END_POINT, AUTHORIZATION),
+});
 const filterModel = new FilterModel();
 
 const filtersPresenter = new FiltersPresenter({
@@ -32,7 +33,7 @@ const waypointsPresenter = new WaypointsPresenter({
   waypointsContainer,
   waypointsModel,
   filterModel,
-  onNewWaypointDestroy: handleNewEventFormClose
+  onNewWaypointDestroy: handleNewEventFormClose,
 });
 
 const newEventButtonComponent = new NewEventButtonView({

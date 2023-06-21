@@ -33,10 +33,15 @@ export default class WaypointsPresenter {
   #isLoading = true;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
-    upperLimit: TimeLimit.UPPER_LIMIT
+    upperLimit: TimeLimit.UPPER_LIMIT,
   });
 
-  constructor({ waypointsContainer, waypointsModel, filterModel, onNewWaypointDestroy }) {
+  constructor({
+    waypointsContainer,
+    waypointsModel,
+    filterModel,
+    onNewWaypointDestroy,
+  }) {
     this.#waypointsContainer = waypointsContainer;
     this.#waypointsModel = waypointsModel;
     this.#filterModel = filterModel;
@@ -54,7 +59,6 @@ export default class WaypointsPresenter {
   }
 
   get waypoints() {
-
     this.#filterType = this.#filterModel.filter;
     const waypoints = this.#waypointsModel.waypoints;
     const filteredWaypoints = filter[this.#filterType](waypoints);
@@ -69,7 +73,6 @@ export default class WaypointsPresenter {
   }
 
   init() {
-
     this.#renderPage();
   }
 
@@ -78,7 +81,6 @@ export default class WaypointsPresenter {
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newWaypointPresenter.init();
   }
-
 
   #handleModeChange = () => {
     this.#newWaypointPresenter.destroy();
@@ -93,7 +95,7 @@ export default class WaypointsPresenter {
         this.#waypointPresenters.get(update.id).setSaving();
         try {
           await this.#waypointsModel.updateWaypoint(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#waypointPresenters.get(update.id).setAborting();
         }
         break;
@@ -101,7 +103,7 @@ export default class WaypointsPresenter {
         this.#newWaypointPresenter.setSaving();
         try {
           await this.#waypointsModel.addWaypoint(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#newWaypointPresenter.setAborting();
         }
         break;
@@ -109,7 +111,7 @@ export default class WaypointsPresenter {
         this.#waypointPresenters.get(update.id).setDeleting();
         try {
           await this.#waypointsModel.deleteWaypoint(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#waypointPresenters.get(update.id).setAborting();
         }
 
@@ -129,7 +131,7 @@ export default class WaypointsPresenter {
         this.#renderPage();
         break;
       case UpdateType.MAJOR:
-        this.#clearPage({resetSortType: true});
+        this.#clearPage({ resetSortType: true });
         this.#renderPage();
         break;
       case UpdateType.INIT:
@@ -144,7 +146,6 @@ export default class WaypointsPresenter {
     }
   };
 
-
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
@@ -154,7 +155,6 @@ export default class WaypointsPresenter {
     this.#clearPage();
     this.#renderPage();
   };
-
 
   #renderSort() {
     this.#sortComponent = new SortView({
@@ -189,11 +189,13 @@ export default class WaypointsPresenter {
   }
 
   #renderNoWaypoints() {
-    this.#NoWaypointComponent = new EmptyListMessage({filterType: this.#filterType});
+    this.#NoWaypointComponent = new EmptyListMessage({
+      filterType: this.#filterType,
+    });
     render(this.#NoWaypointComponent, this.#eventListComponent.element);
   }
 
-  #clearPage({resetSortType = false} = {}) {
+  #clearPage({ resetSortType = false } = {}) {
     this.#newWaypointPresenter.destroy();
     this.#waypointPresenters.forEach((presenter) => presenter.destroy());
     this.#waypointPresenters.clear();
@@ -201,7 +203,7 @@ export default class WaypointsPresenter {
     remove(this.#sortComponent);
     remove(this.#loadingComponent);
 
-    if(this.#NoWaypointComponent) {
+    if (this.#NoWaypointComponent) {
       remove(this.#NoWaypointComponent);
     }
 
