@@ -44,6 +44,7 @@ function createEventOffersSelectionTemplate(waypoint ,offers) {
 function createDestinationList(waypoint, destinations, type, isDisabled) {
   const destination = destinations.find((item) => item.id === waypoint?.id);
 
+
   return (
     `
     <div class="event__field-group  event__field-group--destination">
@@ -195,6 +196,8 @@ export default class EventEditView extends AbstractStatefulView {
   #handleSubmit = null;
   #handleDelete = null;
   #handleCancel = null;
+  #destinations = null;
+  #offers = null;
 
   constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete, onCancel, offers, destinations }) {
     super();
@@ -202,8 +205,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleSubmit = onFormSubmit;
     this.#handleDelete = onDelete;
     this.#handleCancel = onCancel;
-    this.offers = offers;
-    this.destinations = destinations;
+    this.#offers = offers;
+    this.#destinations = destinations;
 
     this._restoreHandlers();
   }
@@ -211,8 +214,8 @@ export default class EventEditView extends AbstractStatefulView {
   get template() {
     return createEventEditTemplate({
       state: this._state,
-      destinations: this.destinations,
-      offers: this.offers});
+      destinations: this.#destinations,
+      offers: this.#offers});
   }
 
   removeElement() {
@@ -288,19 +291,15 @@ export default class EventEditView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
+    const currentDestination = this.#destinations
+      .find((destination) => destination.name === evt.target.value);
 
-    const selectedDestination = this.destinations.find((destination) => destination.name === evt.target.value);
-
-    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
-
-
-    this.updateElement({
-      waypoint: {
+    if (currentDestination) {
+      this.updateElement({
         ...this._state,
-        destination: selectedDestinationId
-      } });
-
-
+        destination: currentDestination.id
+      });
+    }
   };
 
   #priceChangeHandler = (evt) => {
@@ -309,7 +308,7 @@ export default class EventEditView extends AbstractStatefulView {
       waypoint: {
         ...this._state,
         basePrice: Number(evt.target.value),
-}});
+      }});
 
   };
 
