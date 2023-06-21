@@ -2,20 +2,31 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { DESTINATIONS } from '../mock/mock.js';
-import { TRAVEL_WAYPOINTS, WAYPOINT_TYPES } from '../mock/const.js';
+import { WAYPOINT_TYPES } from '../util/const.js';
+import he from 'he';
 
-function createEventOffersSelectionTemplate(offers) {
+function createEventOffersSelectionTemplate(waypoint, offers) {
   if (!offers.length) {
     return '';
   }
 
+  const offersByType = offers.find(
+    (offer) => offer.type === waypoint.type
+  )?.offers;
+  const offersById = [
+    ...offersByType.filter((offer) =>
+      waypoint.offers.find((id) => offer.id === id)
+    ),
+  ];
+
   const createOfferItemTemplate = (offer) => {
-    const { id, title, price, isChecked } = offer;
+    const { id, title, price, isDisabled } = offer;
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}  ${isChecked ? 'checked' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id} 
+       ${isDisabled ? 'disabled' : ''}
+       ${offersById.find((item) => id === item.id) ? 'checked' : ''}">
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -29,9 +40,32 @@ function createEventOffersSelectionTemplate(offers) {
   <section class="event__section event__section--offers">
     <h3 class="event__section-title event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${offers.map(createOfferItemTemplate).join('')}
+      ${offersByType.map(createOfferItemTemplate).join('')}
     </div>
   </section>
+  `;
+}
+
+function createDestinationList(waypoint, destinations, type, isDisabled) {
+  const destination = destinations.find((item) => item.id === waypoint?.id);
+
+  return `
+    <div class="event__field-group  event__field-group--destination">
+    <label class="event__label  event__type-output" for="event-destination-1">
+      ${type}
+    </label>
+    <input class="event__input  event__input--destination" 
+    id="event-destination-1" 
+    type="text" 
+    name="event-destination"
+    ${isDisabled ? 'disabled' : ''} 
+    value="${destination ? destination.name : ''}" list="destination-list-1">
+    <datalist id="destination-list-1">
+    ${destinations.map((item) => ` 
+          <option ${item.id === waypoint.destination ? 'selected' : ''} value="${item.name}">${item.name}</option>
+       `).join('')}
+    </datalist>
+    </div>
   `;
 }
 
@@ -43,7 +77,7 @@ function createEventDestinationSelectionTemplate(destination) {
   const { description, pictures } = destination;
 
   const createPicturesTemplate = (photos) => {
-    if(!photos.length) {
+    if (!photos.length) {
       return '';
     }
 
@@ -56,7 +90,6 @@ function createEventDestinationSelectionTemplate(destination) {
       </div>
     </div>
     `;
-
   };
 
   return `
@@ -68,24 +101,34 @@ function createEventDestinationSelectionTemplate(destination) {
   `;
 }
 
-
-function createEventEditTemplate(data) {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = data;
+function createEventEditTemplate({ state, destinations, offers }) {
+  const waypoint = state;
+  const {
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    type,
+    isDisabled,
+    isDeleting,
+    isSaving,
+  } = state;
 
   const timeFrom = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(dateTo).format('DD/MM/YY HH:mm');
 
-  const createSelectTypesTemplate = (selectedType) => WAYPOINT_TYPES.map((waypointType) => {
-    const checkedAttribute = waypointType === selectedType ? 'checked' : '';
-    const lowerType = waypointType.toLowerCase();
+  const createSelectTypesTemplate = (selectedType) =>
+    WAYPOINT_TYPES.map((waypointType) => {
+      const checkedAttribute = waypointType === selectedType ? 'checked' : '';
+      const lowerType = waypointType.toLowerCase();
 
-    return `
+      return `
     <div class="event__type-item">
      <input id="event-type-${lowerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowerType}" ${checkedAttribute}>
      <label class="event__type-label  event__type-label--${lowerType}" for="event-type-${lowerType}-1">${waypointType}</label>
     </div>
     `;
-  }).join('');
+    }).join('');
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -95,7 +138,7 @@ function createEventEditTemplate(data) {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type}">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
@@ -103,17 +146,7 @@ function createEventEditTemplate(data) {
               </fieldset>
             </div>
           </div>
-          <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__type-output" for="event-destination-1">
-              ${type}
-            </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination.name} list="destination-list-1">
-            <datalist id="destination-list-1">
-            ${TRAVEL_WAYPOINTS.map((point) => ` 
-                  <option value="${point}"></option>
-               `).join('')}
-            </datalist>
-          </div>
+          ${createDestinationList(waypoint.destination, destinations,type,isDisabled)}
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
@@ -126,16 +159,16 @@ function createEventEditTemplate(data) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${he.encode(`${basePrice}`)}>
           </div>
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset"${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
         <section class="event__details">
-          ${createEventOffersSelectionTemplate(offers)}
+          ${createEventOffersSelectionTemplate(state, offers)}
           ${createEventDestinationSelectionTemplate(destination)}
         </section>
       </form>
@@ -153,8 +186,9 @@ const BLANK_EVENT = {
   dateTo: NOW,
   basePrice: 0,
   offers: [],
-  destination: '',
-  isFavorite: false};
+  destination: null,
+  isFavorite: false,
+};
 
 const DEFAULT_FLATPICKR_OPTIONS = {
   enableTime: true,
@@ -170,19 +204,34 @@ export default class EventEditView extends AbstractStatefulView {
   #handleSubmit = null;
   #handleDelete = null;
   #handleCancel = null;
+  #destinations = null;
+  #offers = null;
 
-  constructor({ waypoint = BLANK_EVENT, onFormSubmit, onDelete, onCancel }) {
+  constructor({
+    waypoint = BLANK_EVENT,
+    onFormSubmit,
+    onDelete,
+    onCancel,
+    offers,
+    destinations,
+  }) {
     super();
     this._setState(EventEditView.parseWaypointToState(waypoint));
     this.#handleSubmit = onFormSubmit;
     this.#handleDelete = onDelete;
     this.#handleCancel = onCancel;
+    this.#offers = offers;
+    this.#destinations = destinations;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(this._state);
+    return createEventEditTemplate({
+      state: this._state,
+      destinations: this.#destinations,
+      offers: this.#offers,
+    });
   }
 
   removeElement() {
@@ -221,12 +270,17 @@ export default class EventEditView extends AbstractStatefulView {
       .addEventListener('change', this.#priceChangeHandler);
     this.element
       .querySelector('.event__input--destination')
-      .addEventListener('click', this.#destinationChangeHandler);
+      .addEventListener('change', this.#destinationChangeHandler);
 
-    const availableOffersContainer = this.element.querySelector('.event__available-offers');
+    const availableOffersContainer = this.element.querySelector(
+      '.event__available-offers'
+    );
 
     if (availableOffersContainer) {
-      availableOffersContainer.addEventListener('change', this.#optionClickHandler);
+      availableOffersContainer.addEventListener(
+        'change',
+        this.#optionClickHandler
+      );
     }
 
     this.#setDatePickers();
@@ -255,37 +309,41 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-
   #destinationChangeHandler = (evt) => {
-    const destination = DESTINATIONS.find(
-      ({ name }) => name === evt.target.value
+    evt.preventDefault();
+    const currentDestination = this.#destinations.find(
+      (destination) => destination.name === evt.target.value
     );
 
-    if (destination) {
-      this.updateElement({ ...this._state,
-        destination : destination.id });
+    if (currentDestination) {
+      this.updateElement({
+        ...this._state,
+        destination: currentDestination.id,
+      });
     }
-
   };
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      ...this._state,
-      basePrice: Number(evt.target.value),
+      waypoint: {
+        ...this._state,
+        basePrice: Number(evt.target.value),
+      },
     });
-
   };
 
   #optionClickHandler = (evt) => {
     evt.preventDefault();
-    const selectedOptions = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const selectedOptions = Array.from(
+      this.element.querySelectorAll('.event__offer-checkbox:checked')
+    );
 
     this._setState({
       waypoint: {
         ...this._state.waypoint,
-        offers: selectedOptions.map((option) => option.value)
-      }
+        offers: selectedOptions.map((option) => option.value),
+      },
     });
   };
 

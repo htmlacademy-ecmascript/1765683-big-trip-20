@@ -1,14 +1,13 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import { FilterType, UpdateType } from '../mock/const.js';
-import { filter } from '../mock/filter.js';
+import { FilterType, UpdateType } from '../util/const.js';
+import { filter } from '../util/filter.js';
 
 export default class FiltersPresenter {
   #filtersContainer = null;
   #waypointsModel = null;
   #filterModel = null;
   #filterComponent = null;
-
 
   constructor({ filtersContainer, waypointsModel, filterModel }) {
     this.#filtersContainer = filtersContainer;
@@ -24,7 +23,7 @@ export default class FiltersPresenter {
 
     return Object.values(FilterType).map((type) => ({
       type,
-      count: filter[type](waypoints).length
+      count: filter[type](waypoints).length,
     }));
   }
 
@@ -35,7 +34,7 @@ export default class FiltersPresenter {
     this.#filterComponent = new FilterView({
       filters,
       currentFilterType: this.#filterModel.filter,
-      onFilterTypeChange: this.#handleFilterTypeChange
+      onFilterTypeChange: this.#handleFilterTypeChange,
     });
 
     if (prevFilterComponent === null) {
@@ -58,6 +57,4 @@ export default class FiltersPresenter {
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
-
 }
-

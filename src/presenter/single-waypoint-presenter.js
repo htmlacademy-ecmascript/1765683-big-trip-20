@@ -2,12 +2,14 @@ import { render } from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import EventView from '../view/event-view.js';
 import { replace, remove } from '../framework/render.js';
-import { Mode, UpdateType, UserAction } from '../mock/const.js';
+import { Mode, UpdateType, UserAction } from '../util/const.js';
 
 export default class SingleWaypointPresenter {
   #eventListContainer = null;
   #handleDataChange = null;
   #handleModeChange = null;
+
+  #waypointsModel = null;
 
   #eventComponent = null;
   #eventEditComponent = null;
@@ -15,10 +17,16 @@ export default class SingleWaypointPresenter {
   #waypoint = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ eventListComponent, onDataChange, onModeChange }) {
+  constructor({
+    eventListComponent,
+    onDataChange,
+    onModeChange,
+    waypointsModel,
+  }) {
     this.#eventListContainer = eventListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#waypointsModel = waypointsModel;
   }
 
   init(waypoint) {
@@ -35,11 +43,12 @@ export default class SingleWaypointPresenter {
 
     this.#eventEditComponent = new EventEditView({
       waypoint: this.#waypoint,
+      offers: this.#waypointsModel.offers,
+      destinations: this.#waypointsModel.destinations,
       onFormSubmit: this.#handleFormSubmit,
       onCancel: this.#handleFormCancel,
       onDelete: this.#handleDeleteClick,
     });
-
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this.#eventComponent, this.#eventListContainer);
@@ -70,6 +79,41 @@ export default class SingleWaypointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  }
+
   #replaceInfoToEdit() {
     replace(this.#eventEditComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeydownHandler);
@@ -97,19 +141,18 @@ export default class SingleWaypointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange(
-      UserAction.UPDATE_WAYPOINT,
-      UpdateType.MINOR,
-      {...this.#waypoint,isFavorite: !this.#waypoint.isFavorite});
+    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.MINOR, {
+      ...this.#waypoint,
+      isFavorite: !this.#waypoint.isFavorite,
+    });
   };
 
   #handleFormSubmit = (update) => {
     this.#handleDataChange(
       UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
-      update,
+      update
     );
-    this.#replaceEditToInfo();
   };
 
   #handleDeleteClick = (waypoint) => {
