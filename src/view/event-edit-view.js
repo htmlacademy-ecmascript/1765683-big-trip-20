@@ -13,20 +13,18 @@ function createEventOffersSelectionTemplate(waypoint, offers) {
   const offersByType = offers.find(
     (offer) => offer.type === waypoint.type
   )?.offers;
-  const offersById = [
-    ...offersByType.filter((offer) =>
-      waypoint.offers.find((id) => offer.id === id)
-    ),
-  ];
+
+  const waypointOffersId = waypoint.offers.map(({id}) => id);
 
   const createOfferItemTemplate = (offer) => {
-    const { id, title, price, isDisabled } = offer;
+    const { id, title, price } = offer;
+
+    const isChecked = waypointOffersId.includes(id);
 
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id} 
-       ${isDisabled ? 'disabled' : ''}
-       ${offersById.find((item) => id === item.id) ? 'checked' : ''}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" 
+       ${isChecked ? 'checked' : ''}>
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
@@ -76,6 +74,7 @@ function createEventDestinationSelectionTemplate(destination) {
 
   const { description, pictures } = destination;
 
+
   const createPicturesTemplate = (photos) => {
     if (!photos.length) {
       return '';
@@ -102,7 +101,6 @@ function createEventDestinationSelectionTemplate(destination) {
 }
 
 function createEventEditTemplate({ state, destinations, offers }) {
-  const waypoint = state;
   const {
     basePrice,
     dateFrom,
@@ -146,7 +144,7 @@ function createEventEditTemplate({ state, destinations, offers }) {
               </fieldset>
             </div>
           </div>
-          ${createDestinationList(waypoint.destination, destinations,type,isDisabled)}
+          ${createDestinationList(destination, destinations,type,isDisabled)}
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
@@ -194,8 +192,7 @@ const DEFAULT_FLATPICKR_OPTIONS = {
   enableTime: true,
   altInput: true,
   altFormat: 'd/m/y H:i',
-  // eslint-disable-next-line camelcase
-  time_24hr: true, // flatpickr option
+  'time_24hr': true,
 };
 
 export default class EventEditView extends AbstractStatefulView {
@@ -311,25 +308,21 @@ export default class EventEditView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    const currentDestination = this.#destinations.find(
+    const nextDestination = this.#destinations.find(
       (destination) => destination.name === evt.target.value
     );
 
-    if (currentDestination) {
+    if (nextDestination) {
       this.updateElement({
-        ...this._state,
-        destination: currentDestination.id,
+        destination: nextDestination,
       });
     }
   };
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
-    this._setState({
-      waypoint: {
-        ...this._state,
-        basePrice: Number(evt.target.value),
-      },
+    this.updateElement({
+      basePrice: Number(evt.target.value),
     });
   };
 
@@ -339,11 +332,8 @@ export default class EventEditView extends AbstractStatefulView {
       this.element.querySelectorAll('.event__offer-checkbox:checked')
     );
 
-    this._setState({
-      waypoint: {
-        ...this._state.waypoint,
-        offers: selectedOptions.map((option) => option.value),
-      },
+    this.updateElement({
+      offers: selectedOptions.map((option) => option.value),
     });
   };
 
