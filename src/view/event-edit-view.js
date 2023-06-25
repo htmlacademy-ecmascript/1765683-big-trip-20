@@ -12,7 +12,7 @@ function createEventOffersSelectionTemplate(waypoint, offers) {
 
   const offersByType = offers.find(
     (offer) => offer.type === waypoint.type
-  )?.offers;
+  )?.offers || [];
 
   const waypointOffersId = waypoint.offers.map(({id}) => id);
 
@@ -45,6 +45,7 @@ function createEventOffersSelectionTemplate(waypoint, offers) {
 }
 
 function createDestinationList(waypoint, destinations, type, isDisabled) {
+
   const destination = destinations.find((item) => item.id === waypoint?.id);
 
   return `
@@ -144,7 +145,7 @@ function createEventEditTemplate({ state, destinations, offers }) {
               </fieldset>
             </div>
           </div>
-          ${createDestinationList(destination, destinations,type,isDisabled)}
+          ${createDestinationList(destination, destinations, type, isDisabled)}
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeFrom}>
@@ -332,8 +333,8 @@ export default class EventEditView extends AbstractStatefulView {
       this.element.querySelectorAll('.event__offer-checkbox:checked')
     );
 
-    this.updateElement({
-      offers: selectedOptions.map((option) => option.value),
+    this._setState({
+      offers: selectedOptions.map((element) => element.value)
     });
   };
 

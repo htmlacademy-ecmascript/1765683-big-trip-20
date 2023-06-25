@@ -41,3 +41,4 @@ export const UpdateType = {
   INIT: 'INIT',
   ERROR: 'ERROR',
 };
+
