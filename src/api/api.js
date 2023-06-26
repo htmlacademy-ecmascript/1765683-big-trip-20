@@ -66,8 +66,8 @@ export default class WayPointsApiService extends ApiService {
       'date_to':
         waypoint.dateTo instanceof Date ? waypoint.dateTo.toISOString() : null,
       'is_favorite': waypoint.isFavorite,
-      'destination': waypoint.destination.id,
-      'offers': waypoint.offers.map((offer) => offer.id)
+      'destination': waypoint.destination?.id,
+      'offers': waypoint.offers?.map((offer) => offer.id)
     };
 
     delete adaptedWaypoint.basePrice;

@@ -78,9 +78,7 @@ export default class NewWaypointPresenter {
   }
 
   #handleFormSubmit = (waypoint) => {
-    this.#handleDataChange(UserAction.ADD_WAYPOINT, UpdateType.MINOR, {
-      waypoint,
-    });
+    this.#handleDataChange(UserAction.ADD_WAYPOINT, UpdateType.MINOR, waypoint);
   };
 
   #handleDeleteClick = () => {
