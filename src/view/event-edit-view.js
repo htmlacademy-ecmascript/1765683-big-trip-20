@@ -176,7 +176,7 @@ function createEventEditTemplate({ state, destinations, offers }) {
     </li>`;
 }
 
-const DEFAULT_TYPE = 'Check-in';
+const DEFAULT_TYPE = 'check-in';
 
 const NOW = new Date();
 

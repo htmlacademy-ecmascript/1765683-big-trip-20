@@ -65,7 +65,7 @@ export default class WayPointsApiService extends ApiService {
           : null,
       'date_to':
         waypoint.dateTo instanceof Date ? waypoint.dateTo.toISOString() : null,
-      'is_favorite': waypoint.isFavorite,
+      'is_favorite': waypoint?.isFavorite,
       'destination': waypoint.destination?.id,
       'offers': waypoint.offers?.map((offer) => offer.id)
     };
