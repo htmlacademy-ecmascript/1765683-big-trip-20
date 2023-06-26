@@ -47,8 +47,7 @@ export default class WaypointsPresenter {
     this.#filterModel = filterModel;
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
-      offers: this.#waypointsModel.offers,
-      destinations: this.#waypointsModel.destinations,
+      waypointsModel: this.#waypointsModel,
       eventListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewWaypointDestroy,
@@ -142,6 +141,7 @@ export default class WaypointsPresenter {
       case UpdateType.ERROR:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#clearPage();
         this.#renderError();
     }
   };

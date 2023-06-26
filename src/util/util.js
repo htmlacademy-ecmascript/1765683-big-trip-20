@@ -26,14 +26,6 @@ export function humanizeDurationFromDates(from, to) {
   } ${minutes - hours * 60}M`;
 }
 
-export function getRandomNumber() {
-  return Math.floor(Math.random() * 20);
-}
-
-export function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 export function durationPoint(point) {
   return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
 }

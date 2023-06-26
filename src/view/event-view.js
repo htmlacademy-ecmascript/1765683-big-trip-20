@@ -7,6 +7,9 @@ import {
 } from '../util/util.js';
 
 function createEventOfferTemplate(offer) {
+  if (!offer) {
+    return '';
+  }
   return `
           <li class="event__offer">
             <span class="event__offer-title">${offer.title}</span>

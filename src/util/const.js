@@ -1,12 +1,3 @@
-export const TRAVEL_WAYPOINTS = [
-  'Amsterdam',
-  'Chamonix',
-  'Geneva',
-  'New York',
-  'Moscow',
-  'Tokyo',
-];
-
 export const WAYPOINT_TYPES = [
   'Taxi',
   'Bus',
@@ -50,3 +41,4 @@ export const UpdateType = {
   INIT: 'INIT',
   ERROR: 'ERROR',
 };
+
